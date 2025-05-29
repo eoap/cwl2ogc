@@ -1,0 +1,52 @@
+{
+  "dependent_parameters":{
+    "schema":{
+      "type":"object",
+      "properties":{
+        "itemA":{
+          "type":"string"
+        },
+        "itemB":{
+          "type":"string"
+        }
+      },
+      "required":[
+        "itemA",
+        "itemB"
+      ]
+    },
+    "title":"dependent_parameters label",
+    "description":"dependent_parameters doc"
+  },
+  "exclusive_parameters":{
+    "schema":{
+      "nullable":false,
+      "anyOf":[
+        {
+          "type":"object",
+          "properties":{
+            "itemC":{
+              "type":"string"
+            }
+          },
+          "required":[
+            "itemC"
+          ]
+        },
+        {
+          "type":"object",
+          "properties":{
+            "itemD":{
+              "type":"string"
+            }
+          },
+          "required":[
+            "itemD"
+          ]
+        }
+      ]
+    },
+    "title":"dependent_parameters label",
+    "description":"dependent_parameters doc"
+  }
+}

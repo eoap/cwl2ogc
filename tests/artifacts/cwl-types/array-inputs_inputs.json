@@ -1,0 +1,32 @@
+{
+  "filesA":{
+    "schema":{
+      "type":"array",
+      "items":{
+        "type":"string"
+      }
+    },
+    "title":"filesA label",
+    "description":"filesA doc"
+  },
+  "filesB":{
+    "schema":{
+      "type":"array",
+      "items":{
+        "type":"string"
+      }
+    },
+    "title":"filesB label",
+    "description":"filesB doc"
+  },
+  "filesC":{
+    "schema":{
+      "type":"array",
+      "items":{
+        "type":"string"
+      }
+    },
+    "title":"filesC label",
+    "description":"filesC doc"
+  }
+}

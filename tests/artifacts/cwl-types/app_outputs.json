@@ -1,0 +1,7 @@
+{
+  "echo_output":{
+    "schema":{
+      "type":"string"
+    }
+  }
+}

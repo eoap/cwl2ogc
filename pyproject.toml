@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cwl2ogc"
+dynamic = ["version"]
+description = 'CWL Worflow inputs/outputs to OGC API Processes inputs/outputs'
+
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Fabrice Brito", email = "info@terradue.com" },
+  { name = "Simone Tripodi", email = "info@terradue.com"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "cwl-utils==0.37",
+  "loguru",
+  "pyyaml",
+]
+
+[project.urls]
+Documentation = "https://github.com/eoap/cwl2ogc#readme"
+Issues = "https://github.com/eoap/cwl2ogc/issues"
+Source = "https://github.com/eoap/cwl2ogc"
+
+[tool.hatch.version]
+path = "src/cwl2ogc/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/cwl2ogc tests}"
+
+[tool.coverage.run]
+source_pkgs = ["cwl2ogc", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/cwl2ogc/__about__.py",
+]
+
+[tool.coverage.paths]
+cwl2ogc = ["src/cwl2ogc", "*/cwl2ogc/src/cwl2ogc"]
+tests = ["tests", "*/cwl2ogc/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

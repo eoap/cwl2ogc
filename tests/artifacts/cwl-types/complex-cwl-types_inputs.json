@@ -1,0 +1,168 @@
+{
+  "color":{
+    "schema":{
+      "type":"string",
+      "enum":[
+        "red",
+        "green",
+        "blue"
+      ],
+      "default":"green"
+    },
+    "title":"color label",
+    "description":"color doc"
+  },
+  "color1":{
+    "schema":{
+      "nullable":true,
+      "type":"array",
+      "items":{
+        "type":"string",
+        "enum":[
+          "red",
+          "green",
+          "blue"
+        ]
+      }
+    },
+    "title":"color1 label",
+    "description":"color1 doc"
+  },
+  "bands":{
+    "schema":{
+      "nullable":true,
+      "type":"array",
+      "items":{
+        "type":"array",
+        "items":{
+          "type":"string",
+          "enum":[
+            "red",
+            "green",
+            "blue"
+          ]
+        }
+      }
+    },
+    "title":"bands label",
+    "description":"bands doc"
+  },
+  "input0":{
+    "schema":{
+      "type":"string"
+    },
+    "title":"input0 label",
+    "description":"input0 doc"
+  },
+  "optional_string":{
+    "schema":{
+      "nullable":true,
+      "type":"string",
+      "default":"default"
+    },
+    "title":"optional_string label",
+    "description":"optional_string doc"
+  },
+  "input1":{
+    "schema":{
+      "type":"array",
+      "items":{
+        "type":"string"
+      }
+    },
+    "title":"input1 label",
+    "description":"input1 doc"
+  },
+  "input2":{
+    "schema":{
+      "type":"array",
+      "items":{
+        "type":"integer"
+      }
+    },
+    "title":"input2 label",
+    "description":"input2 doc"
+  },
+  "input3":{
+    "schema":{
+      "nullable":true,
+      "type":"array",
+      "items":{
+        "type":"string"
+      }
+    },
+    "title":"input3 label",
+    "description":"input3 doc"
+  },
+  "input4":{
+    "schema":{
+      "nullable":true,
+      "type":"string",
+      "enum":[
+        "bam",
+        "sam",
+        "bam_mapped",
+        "sam_mapped",
+        "fastq"
+      ]
+    },
+    "title":"input4 label",
+    "description":"input4 doc"
+  },
+  "input5":{
+    "schema":{
+      "nullable":false,
+      "anyOf":[
+        {
+          "type":"string",
+          "enum":[
+            "bam",
+            "sam",
+            "bam_mapped",
+            "sam_mapped",
+            "fastq"
+          ]
+        }
+      ],
+      "default":"bam"
+    },
+    "title":"input5 label",
+    "description":"input5 doc"
+  },
+  "thresh":{
+    "schema":{
+      "nullable":true,
+      "type":"string",
+      "default":"1.0 mm/day"
+    },
+    "title":"thresh label",
+    "description":"thresh doc"
+  },
+  "option":{
+    "schema":{
+      "type":"boolean",
+      "default":true
+    },
+    "title":"option label",
+    "description":"option doc"
+  },
+  "option2":{
+    "schema":{
+      "nullable":true,
+      "type":"boolean"
+    },
+    "title":"option2 label",
+    "description":"option2 doc"
+  },
+  "array_boolean":{
+    "schema":{
+      "nullable":true,
+      "type":"array",
+      "items":{
+        "type":"boolean"
+      }
+    },
+    "title":"array_boolean label",
+    "description":"array_boolean doc"
+  }
+}

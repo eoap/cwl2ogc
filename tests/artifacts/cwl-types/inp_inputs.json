@@ -1,0 +1,47 @@
+{
+  "example_flag":{
+    "schema":{
+      "type":"boolean"
+    },
+    "title":"example_flag label",
+    "description":"example_flag doc"
+  },
+  "example_string":{
+    "schema":{
+      "type":"string"
+    },
+    "title":"example_string label",
+    "description":"example_string doc"
+  },
+  "example_int":{
+    "schema":{
+      "type":"integer"
+    },
+    "title":"example_int label",
+    "description":"example_int doc"
+  },
+  "example_file":{
+    "schema":{
+      "nullable":true,
+      "type":"string",
+      "format":"uri"
+    },
+    "title":"example_file label",
+    "description":"example_file doc"
+  },
+  "example_enum":{
+    "schema":{
+      "type":"string",
+      "enum":[
+        "auto",
+        "fasta",
+        "fastq",
+        "fasta.gz",
+        "fastq.gz"
+      ],
+      "default":"auto"
+    },
+    "title":"example_enum label",
+    "description":"example_enum doc"
+  }
+}

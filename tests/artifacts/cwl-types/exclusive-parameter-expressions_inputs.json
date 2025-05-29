@@ -1,0 +1,17 @@
+{
+  "file_format":{
+    "schema":{
+      "nullable":true,
+      "type":"string",
+      "enum":[
+        "auto",
+        "fasta",
+        "fastq",
+        "fasta.gz",
+        "fastq.gz"
+      ]
+    },
+    "title":"file_format label",
+    "description":"file_format doc"
+  }
+}
