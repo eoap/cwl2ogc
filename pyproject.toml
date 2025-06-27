@@ -65,3 +65,23 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+
+[tool.hatch.envs.test]
+skip-install = false
+
+dependencies = [
+  "cwl-utils==0.37",
+  "loguru",
+  "pyyaml",
+  "nose2",
+]
+
+
+[tool.hatch.envs.test.scripts]
+test = "hatch run nose2"
+testv = "hatch run nose2 --verbose"
+cov = ["coverage run --source=src/eoap_cwlwrap -m nose2", "coverage report"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
