@@ -29,7 +29,7 @@ class TestConversion(unittest.TestCase):
 
         converter = BaseCWLtypes2OGCConverter(cwl)
 
-        if hasattr(cwl, '__iter__'):
+        if isinstance(cwl, list):
             for workflow in cwl:
                 self.serialize_io(converter, workflow)
         else:
@@ -55,3 +55,6 @@ class TestConversion(unittest.TestCase):
 
     def test_app(self):
         self.print_io("./tests/artifacts/cwl-types/app.cwl")
+
+    def test_string_formats(self):
+        self.print_io("./tests/artifacts/cwl-types/string-formats.cwl")

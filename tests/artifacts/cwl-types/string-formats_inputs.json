@@ -1,0 +1,135 @@
+{
+  "date_input":{
+    "schema":{
+      "type":"string",
+      "format":"date"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"\"date\" }"
+  },
+  "date-time_input":{
+    "schema":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"date-time\" }"
+  },
+  "duration_input":{
+    "schema":{
+      "type":"string",
+      "format":"duration"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"duration\" }"
+  },
+  "email_input":{
+    "schema":{
+      "type":"string",
+      "format":"email"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"email\" }"
+  },
+  "hostname_input":{
+    "schema":{
+      "type":"string",
+      "format":"hostname"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"hostname\" }"
+  },
+  "idn-email_input":{
+    "schema":{
+      "type":"string",
+      "format":"idn-email"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"idn-email\" }"
+  },
+  "idn-hostname_input":{
+    "schema":{
+      "type":"string",
+      "format":"idn-hostname"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"idn-hostname\" }"
+  },
+  "ipv4_input":{
+    "schema":{
+      "type":"string",
+      "format":"ipv4"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"ipv4\" }"
+  },
+  "ipv6_input":{
+    "schema":{
+      "type":"string",
+      "format":"ipv6"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"ipv6\" }"
+  },
+  "iri_input":{
+    "schema":{
+      "type":"string",
+      "format":"iri"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"iri\" }"
+  },
+  "iri-reference_input":{
+    "schema":{
+      "type":"string",
+      "format":"iri-reference"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"iri-reference\" }"
+  },
+  "json-pointer_input":{
+    "schema":{
+      "type":"string",
+      "format":"json-pointer"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"json-pointer\" }"
+  },
+  "password_input":{
+    "schema":{
+      "type":"string",
+      "format":"password"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"password\" }"
+  },
+  "relative-json-pointer_input":{
+    "schema":{
+      "type":"string",
+      "format":"relative-json-pointer"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"relative-json-pointer\" }"
+  },
+  "uuid_input":{
+    "schema":{
+      "type":"string",
+      "format":"uuid"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"uuid\" }"
+  },
+  "uri_input":{
+    "schema":{
+      "type":"string",
+      "format":"uri"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"uri\" }"
+  },
+  "uri-reference_input":{
+    "schema":{
+      "type":"string",
+      "format":"uri-reference"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"uri-reference\" }"
+  },
+  "uri-template_input":{
+    "schema":{
+      "type":"string",
+      "format":"uri-template"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"uri-template\" }"
+  },
+  "time_input":{
+    "schema":{
+      "type":"string",
+      "format":"time"
+    },
+    "title":"Expected schema serialization: { \"type\": \"string\", \"format\": \"time\" }"
+  }
+}

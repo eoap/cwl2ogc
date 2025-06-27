@@ -1,2 +1,4 @@
+.pydevproject
 .project
 __pycache__
+/.pytest_cache/

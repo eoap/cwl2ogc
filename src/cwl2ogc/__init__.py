@@ -39,6 +39,30 @@ class CWLtypes2OGCConverter:
 
 class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
+    STRING_FORMAT_URL = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'
+
+    STRING_FORMATS = {
+        'Date': "date",
+        'DateTime': "date-time",
+        'Duration': "duration",
+        'Email': "email",
+        'Hostname': "hostname",
+        'IDNEmail': "idn-email",
+        'IDNHostname': "idn-hostname",
+        'IPv4': "ipv4",
+        'IPv6': "ipv6",
+        'IRI': "iri",
+        'IRIReference': "iri-reference",
+        'JsonPointer': "json-pointer",
+        'Password': "password",
+        'RelativeJsonPointer': "relative-json-pointer",
+        'UUID': "uuid",
+        'URI': "uri",
+        'URIReference': "uri-reference",
+        'URITemplate': "uri-template",
+        'Time': "time"
+    }
+
     CWL_TYPES = {}
 
     def __init__(self, cwl):
@@ -60,25 +84,28 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
         self.CWL_TYPES[list] = self.on_list
 
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema] = self.on_enum_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema] = self.on_enum_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema] = self.on_enum_schema
+        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
+                    cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
+                    cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]:
+            self.CWL_TYPES[typ] = self.on_enum_schema
 
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_0.CommandInputParameter] = self.on_input_parameter
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_1.CommandInputParameter] = self.on_input_parameter
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_2.CommandInputParameter] = self.on_input_parameter
+        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputParameter,
+                    cwl_utils.parser.cwl_v1_1.CommandInputParameter,
+                    cwl_utils.parser.cwl_v1_2.CommandInputParameter]:
+            self.CWL_TYPES[typ] = self.on_input_parameter
 
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_0.InputArraySchema] = self.on_input_array_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_1.InputArraySchema] = self.on_input_array_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_2.InputArraySchema] = self.on_input_array_schema
+        for typ in [cwl_utils.parser.cwl_v1_0.InputArraySchema,
+                    cwl_utils.parser.cwl_v1_1.InputArraySchema,
+                    cwl_utils.parser.cwl_v1_2.InputArraySchema,
+                    cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
+                    cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
+                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]:
+            self.CWL_TYPES[typ] = self.on_input_array_schema
 
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_0.CommandInputArraySchema] = self.on_input_array_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_1.CommandInputArraySchema] = self.on_input_array_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_2.CommandInputArraySchema] = self.on_input_array_schema
-
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema] = self.on_record_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema] = self.on_record_schema
-        self.CWL_TYPES[cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema] = self.on_record_schema
+        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
+                    cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
+                    cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]:
+            self.CWL_TYPES[typ] = self.on_record_schema
 
     def clean_name(self, name: str) -> str:
         return name[name.rfind('/') + 1:]
@@ -173,7 +200,10 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
     # record
 
-    def on_record_internal(self, fields):
+    def on_record_internal(self, record, fields):
+        if self.STRING_FORMAT_URL in record.name:
+            return { "type": "string", "format": self.STRING_FORMATS.get(record.name.split('#')[-1]) }
+
         record = {
             "type": "object",
             "properties": {},
@@ -190,10 +220,10 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return record
 
     def on_record_schema(self, input):
-        return self.on_record_internal(input.type_.fields)
+        return self.on_record_internal(input, input.type_.fields)
 
     def on_record(self, input):
-        return self.on_record_internal(input.fields)
+        return self.on_record_internal(input, input.fields)
 
     def to_ogc(self, params):
         ogc_map = {}
