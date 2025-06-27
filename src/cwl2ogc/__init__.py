@@ -201,7 +201,15 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     # record
 
     def on_record_internal(self, record, fields):
-        if self.STRING_FORMAT_URL in record.name:
+        record_name = ''
+        if hasattr(record, "name"):
+            record_name = record.name
+        elif hasattr(record, "id"):
+            record_name = record.id
+        else:
+            logger.warning(f"Impossible to detect {record.__dict__}, skipping name check...")
+
+        if self.STRING_FORMAT_URL in record_name:
             return { "type": "string", "format": self.STRING_FORMATS.get(record.name.split('#')[-1]) }
 
         record = {
