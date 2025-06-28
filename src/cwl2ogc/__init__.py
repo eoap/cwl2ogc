@@ -2,8 +2,15 @@
 #
 # SPDX-License-Identifier: MIT
 
-import cwl_utils
+from cwl_utils.parser import load_document_by_yaml
 from loguru import logger
+from urllib.parse import urlparse
+import cwl_utils
+import gzip
+import io
+import yaml
+import requests
+import os
 
 class CWLtypes2OGCConverter:
 
@@ -233,7 +240,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     def on_record(self, input):
         return self.on_record_internal(input, input.fields)
 
-    def to_ogc(self, params):
+    def _to_ogc(self, params):
         ogc_map = {}
 
         for param in params:
@@ -250,7 +257,48 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return ogc_map
 
     def get_inputs(self):
-        return self.to_ogc(self.cwl.inputs)
+        return self._to_ogc(self.cwl.inputs)
 
     def get_outputs(self):
-        return self.to_ogc(self.cwl.outputs)
+        return self._to_ogc(self.cwl.outputs)
+
+def _is_url(path_or_url: str) -> bool:
+    try:
+        result = urlparse(path_or_url)
+        return all([result.scheme in ('http', 'https'), result.netloc])
+    except Exception:
+        return False
+
+def load_converter_from_location(path_or_url: str) -> BaseCWLtypes2OGCConverter:
+    if _is_url(path_or_url):
+        response = requests.get(path_or_url, stream=True)
+        response.raise_for_status()
+
+        # Read first 2 bytes to check for gzip
+        magic = response.raw.read(2)
+        remaining = response.raw.read()  # Read rest of the stream
+        combined = io.BytesIO(magic + remaining)
+
+        if magic == b'\x1f\x8b':
+            decompressed = gzip.GzipFile(fileobj=combined)
+            text_stream = io.TextIOWrapper(decompressed, encoding='utf-8')
+        else:
+            text_stream = io.TextIOWrapper(combined, encoding='utf-8')
+
+        return load_converter_from_stream(text_stream)
+    elif os.path.exists(path_or_url):
+        with open(path_or_url, 'r', encoding='utf-8') as f:
+            return load_converter_from_stream(f)
+    else:
+        raise ValueError(f"Invalid source {path_or_url}: not a URL or existing file path")
+
+def load_converter_from_string_content(content: str) -> BaseCWLtypes2OGCConverter:
+    return load_converter_from_stream(io.StringIO(content))
+
+def load_converter_from_stream(content: io.TextIOWrapper) -> BaseCWLtypes2OGCConverter:
+    cwl_content = yaml.safe_load(content)
+    return load_converter_from_yaml(cwl_content)
+
+def load_converter_from_yaml(cwl_content: dict) -> BaseCWLtypes2OGCConverter:
+    cwl = load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
+    return BaseCWLtypes2OGCConverter(cwl=cwl)
