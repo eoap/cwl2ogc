@@ -5,9 +5,11 @@
 from cwl_utils.parser import load_document_by_yaml
 from loguru import logger
 from urllib.parse import urlparse
+from typing import Any
 import cwl_utils
 import gzip
 import io
+import json
 import yaml
 import requests
 import os
@@ -261,6 +263,15 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
     def get_outputs(self):
         return self._to_ogc(self.cwl.outputs)
+
+    def _dump(self, data: dict, stream: Any):
+        json.dump(data, stream, indent=2)
+
+    def dump_inputs(self, stream: Any):
+        self._dump(data=self.get_inputs(), stream=stream)
+
+    def dump_outputs(self, stream: Any):
+        self._dump(data=self.get_outputs(), stream=stream)        
 
 def _is_url(path_or_url: str) -> bool:
     try:
