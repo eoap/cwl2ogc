@@ -1,11 +1,11 @@
-from cwl2ogc import BaseCWLtypes2OGCConverter
-from cwl_utils.parser import load_document_by_yaml
-from loguru import logger
-import cwl_utils
 import json
 import os
 import unittest
 import yaml
+from cwl2ogc import BaseCWLtypes2OGCConverter
+from cwl_utils.parser import load_document_by_yaml
+from loguru import logger
+import cwl_utils
 
 class TestConversion(unittest.TestCase):
 
