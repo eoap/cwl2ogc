@@ -14,11 +14,11 @@ class TestConversion(unittest.TestCase):
 
     def serialize_io(self, converter, workflow):
         logger.info(f"* OGC Processes API representation of '{workflow.id}' inputs:")
-        inputs = converter.to_ogc(workflow.inputs)
+        inputs = converter._to_ogc(workflow.inputs)
         print(json.dumps(inputs))
 
         logger.info(f"* OGC Processes API representation of '{workflow.id}' outputs:")
-        outputs = converter.to_ogc(workflow.outputs)
+        outputs = converter._to_ogc(workflow.outputs)
         print(json.dumps(outputs))
 
     def print_io(self, file):
