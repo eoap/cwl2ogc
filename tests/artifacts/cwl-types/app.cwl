@@ -32,5 +32,13 @@ inputs:
 outputs:
   echo_output:
     type: stdout
+  persistent_output:
+    type: File
+  dir_output:
+    label: Vegetation indexes
+    doc: Vegetation indexes
+    type:
+      type: array
+      items: Directory
 
 stdout: echo_output.txt

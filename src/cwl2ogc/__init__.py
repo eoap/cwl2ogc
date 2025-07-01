@@ -83,8 +83,16 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         self.CWL_TYPES["boolean"] = lambda input : { "type": "boolean" }
         self.CWL_TYPES["string"] = lambda input : { "type": "string" }
         self.CWL_TYPES["stdout"] = self.CWL_TYPES["string"]
-        self.CWL_TYPES["File"] = lambda input : { "type": "string", "format": "uri" }
-        self.CWL_TYPES["Directory"] = self.CWL_TYPES["File"]
+
+        for typ in ["File",
+                    cwl_utils.parser.cwl_v1_0.File,
+                    cwl_utils.parser.cwl_v1_1.File,
+                    cwl_utils.parser.cwl_v1_2.File,
+                    "Directory",
+                    cwl_utils.parser.cwl_v1_0.Directory,
+                    cwl_utils.parser.cwl_v1_1.Directory,
+                    cwl_utils.parser.cwl_v1_2.Directory]:
+            self.CWL_TYPES[typ] = lambda input : { "type": "string", "format": "uri" }
 
         # these are not correctly interpreted as CWL types
         self.CWL_TYPES["record"] = self.on_record
@@ -106,9 +114,15 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         for typ in [cwl_utils.parser.cwl_v1_0.InputArraySchema,
                     cwl_utils.parser.cwl_v1_1.InputArraySchema,
                     cwl_utils.parser.cwl_v1_2.InputArraySchema,
+                    cwl_utils.parser.cwl_v1_0.OutputArraySchema,
+                    cwl_utils.parser.cwl_v1_1.OutputArraySchema,
+                    cwl_utils.parser.cwl_v1_2.OutputArraySchema,
                     cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
                     cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
-                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]:
+                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema,
+                    cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
+                    cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
+                    cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]:
             self.CWL_TYPES[typ] = self.on_input_array_schema
 
         for typ in [cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
@@ -152,6 +166,9 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         logger.warning(f"input_parameter not supported yet: {input}")
         return {}
 
+    def _warn_unsupported_type(self, typ: Any):
+        logger.warning(f"{typ} not supported yet, currently supporting only:\n * {'\n * '.join([str(k) for k in list(self.CWL_TYPES.keys())])}")
+
     def search_type_in_dictionary(self, expected):
         for requirement in self.cwl.requirements:
             if ("SchemaDefRequirement" == requirement.class_):
@@ -159,7 +176,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
                     if (expected == type.name):
                         return self.on_input(type)
 
-        logger.warning(f"{expected} not supported yet, currently supporting only: {list(self.CWL_TYPES.keys())}")
+        self._warn_unsupported_type(expected)
         return {}
 
     def on_input(self, input):
@@ -179,7 +196,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
             elif input.type_.__class__ in self.CWL_TYPES:
                 type = self.CWL_TYPES.get(input.type_.__class__)(input)
             else:
-                logger.warning(f"{input.type_} not supported yet, currently supporting only: {list(self.CWL_TYPES.keys())}")
+                self._warn_unsupported_type(input.type_)
         else:
             logger.warning(f"I still don't know what to do for {input}")
 
@@ -312,4 +329,8 @@ def load_converter_from_stream(content: io.TextIOWrapper) -> BaseCWLtypes2OGCCon
 
 def load_converter_from_yaml(cwl_content: dict) -> BaseCWLtypes2OGCConverter:
     cwl = load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
+
+    if isinstance(cwl, list):
+        return [BaseCWLtypes2OGCConverter(cwl=swf) for swf in cwl]
+
     return BaseCWLtypes2OGCConverter(cwl=cwl)
