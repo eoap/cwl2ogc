@@ -167,7 +167,8 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return {}
 
     def _warn_unsupported_type(self, typ: Any):
-        logger.warning(f"{typ} not supported yet, currently supporting only:\n * {'\n * '.join([str(k) for k in list(self.CWL_TYPES.keys())])}")
+        supported_types = '\n * '.join([str(k) for k in list(self.CWL_TYPES.keys())])
+        logger.warning(f"{typ} not supported yet, currently supporting only:\n * {supported_types}")
 
     def search_type_in_dictionary(self, expected):
         for requirement in self.cwl.requirements:
