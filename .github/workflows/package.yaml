@@ -39,7 +39,9 @@ jobs:
     - name: Build package
       run: |
         hatch build 
-        
+    - name: Test package
+      run: |
+        hatch test         
     - name: Publish package distributions to PyPI (main)
       if: github.ref == 'refs/heads/main'
       uses: pypa/gh-action-pypi-publish@release/v1
