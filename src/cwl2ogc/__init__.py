@@ -215,7 +215,9 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
             "nullable": nullable
         }
 
-        if nullable and 2 == len(input.type_):
+        if 1 == len(input.type_):
+            input_list.update(self.on_input(input.type_[0]))
+        elif nullable and 2 == len(input.type_):
             for item in input.type_:
                 if "null" != item:
                     input_list.update(self.on_input(item))
