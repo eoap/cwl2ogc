@@ -5,7 +5,12 @@
 from cwl_utils.parser import load_document_by_yaml
 from loguru import logger
 from urllib.parse import urlparse
-from typing import Any
+from typing import (
+    Any,
+    get_args,
+    get_origin,
+    Union
+)
 import cwl_utils
 import gzip
 import io
@@ -26,9 +31,6 @@ class CWLtypes2OGCConverter:
         pass
 
     def on_input_array_schema(input):
-        pass
-
-    def on_input_parameter(input):
         pass
 
     def on_input_parameter(input):
@@ -213,7 +215,9 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
             "nullable": nullable
         }
 
-        if nullable and 2 == len(input.type_):
+        if 1 == len(input.type_):
+            input_list.update(self.on_input(input.type_[0]))
+        elif nullable and 2 == len(input.type_):
             for item in input.type_:
                 if "null" != item:
                     input_list.update(self.on_input(item))
@@ -260,11 +264,40 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     def on_record(self, input):
         return self.on_record_internal(input, input.fields)
 
-    def _to_ogc(self, params):
+    def _type_to_string(self, typ: Any) -> str:
+        if get_origin(typ) is Union:
+            return " or ".join([self._type_to_string(inner_type) for inner_type in get_args(typ)])
+
+        if isinstance(typ, list):
+            return f"[ {', '.join([self._type_to_string(t) for t in typ])} ]"
+
+        if hasattr(typ, "items"):
+            return f"{self._type_to_string(typ.items)}[]"
+
+        if hasattr(typ, "symbols"):
+             return f"enum[ {', '.join([s.split('/')[-1] for s in typ.symbols])} ]"
+
+        if hasattr(typ, 'type_'):
+            return self._type_to_string(typ.type_)
+
+        if isinstance(typ, str):
+            return typ
+        
+        return typ.__name__
+
+    def _to_ogc(self, params, is_input: bool = False):
         ogc_map = {}
 
         for param in params:
-            schema = { "schema": self.on_input(param) }
+            schema = {
+                "schema": self.on_input(param),
+                "metadata": [ { "title": "cwl:type", "value": f"{self._type_to_string(param.type_)}" } ]
+            }
+
+            if is_input:
+                schema["minOccurs"] = 0 if self.is_nullable(param) else 1
+                schema["maxOccurs"] = 1
+                schema["valuePassing"] = "byValue"
 
             if param.label:
                 schema["title"] = param.label
@@ -277,19 +310,19 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return ogc_map
 
     def get_inputs(self):
-        return self._to_ogc(self.cwl.inputs)
+        return self._to_ogc(params=self.cwl.inputs, is_input=True)
 
     def get_outputs(self):
-        return self._to_ogc(self.cwl.outputs)
+        return self._to_ogc(params=self.cwl.outputs)
 
-    def _dump(self, data: dict, stream: Any):
-        json.dump(data, stream, indent=2)
+    def _dump(self, data: dict, stream: Any, pretty_print: bool):
+        json.dump(data, stream, indent=2 if pretty_print else None)
 
-    def dump_inputs(self, stream: Any):
-        self._dump(data=self.get_inputs(), stream=stream)
+    def dump_inputs(self, stream: Any, pretty_print: bool = False):
+        self._dump(data=self.get_inputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_outputs(self, stream: Any):
-        self._dump(data=self.get_outputs(), stream=stream)        
+    def dump_outputs(self, stream: Any, pretty_print: bool = False):
+        self._dump(data=self.get_outputs(), stream=stream, pretty_print=pretty_print)        
 
 def _is_url(path_or_url: str) -> bool:
     try:

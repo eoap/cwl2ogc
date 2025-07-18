@@ -24,4 +24,24 @@ Provides utilities to assist with:
 
 * `POST /processes` (i.e. deployment flow)
 
-This library may be useful for OGC API - Processes implementations that support deploying CWL Workflows as execution units, helping bridge the gap between CWL syntax and the standardized OGC process interface.
+This library may be useful for OGC API - Processes implementations that support deploying CWL Workflows as execution units, helping bridge the gap between CWL syntax and the standardized OGC process interface.Parsing
+
+## Parsing
+
+The `cwl2ogc` library ships a set of utility methods in order to simplify the parsing operations to the final user:
+
+* `cwl2ogc.load_converter_from_location(path_or_url: str)`: reads a CWL document given its local File System or remote URL;
+* `cwl2ogc.load_converter_from_string_content(content: str)`: reads a CWL document from a text in a string in memory;
+* `cwl2ogc.load_converter_from_stream(content: io.TextIOWrapper)`: reads a CWL document from a text stream;
+* `cwl2ogc.load_converter_from_yaml(cwl_content: dict)`: reads a CWL document from an laready YAML parsed dictionary stream.
+
+They all return a `cwl2ogc.BaseCWLtypes2OGCConverter` instance.
+
+## Serializing
+
+Once the document is parsed, invoke the
+
+* `cwl2ogc.BaseCWLtypes2OGCConverter.dump_inputs`,
+* `cwl2ogc.BaseCWLtypes2OGCConverter.dump_outputs`.
+
+APIs to dump the CWL inputs/outputs to the target Stream (i.e. a file, the stdout, ...) in OGC JSON format.
