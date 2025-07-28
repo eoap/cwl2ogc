@@ -59,13 +59,14 @@ extra_javascript:
 nav:
   - Introduction: index.md
   - Supported conversions:
-    - Essential Input Parameters: essential-input-parameters.ipynb
-    - Array Inputs: array-inputs.ipynb
-    - Inclusive and Exclusive Inputs: inclusive-exclusive-inputs.ipynb
-    - Exclusive Input Parameters with Expressions: exclusive-input-parameters-expressions.ipynb
+    - essential-input-parameters.ipynb
+    - array-inputs.ipynb
+    - inclusive-exclusive-inputs.ipynb
+    - exclusive-input-parameters-expressions.ipynb
+    - graph.ipynb
   - More examples:
-    - Complex CWL types: complex-cwl-types.ipynb
-    - Imported CWL types: imported-cwl-types.ipynb
-    - String formats: string-formats.ipynb
+    - complex-cwl-types.ipynb
+    - imported-cwl-types.ipynb
+    - string-formats.ipynb
 
 copyright: <a href="https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg">License CC BY-SA 4.0</a>, by <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</a>
