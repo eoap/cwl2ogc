@@ -79,7 +79,8 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     def __init__(self, cwl):
         self.cwl = cwl
 
-        self.CWL_TYPES["int"] = lambda input : { "type": "integer" }
+        self.CWL_TYPES["int"] = lambda input : { "type": "integer", "format": "int32" }
+        self.CWL_TYPES["long"] = lambda input : { "type": "integer", "format": "int64" }
         self.CWL_TYPES["double"] = lambda input : { "type": "number", "format": "double" }
         self.CWL_TYPES["float"] = lambda input : { "type": "number", "format": "float" }
         self.CWL_TYPES["boolean"] = lambda input : { "type": "boolean" }
@@ -173,7 +174,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         logger.warning(f"{typ} not supported yet, currently supporting only:\n * {supported_types}")
 
     def search_type_in_dictionary(self, expected):
-        for requirement in self.cwl.requirements:
+        for requirement in getattr(self.cwl, "requirements", []):
             if ("SchemaDefRequirement" == requirement.class_):
                 for type in requirement.types:
                     if (expected == type.name):
