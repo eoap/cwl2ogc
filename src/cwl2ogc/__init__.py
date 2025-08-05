@@ -130,7 +130,10 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
         for typ in [cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
                     cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
-                    cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]:
+                    cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema,
+                    cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
+                    cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
+                    cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]:
             self.CWL_TYPES[typ] = self.on_record_schema
 
     def clean_name(self, name: str) -> str:
