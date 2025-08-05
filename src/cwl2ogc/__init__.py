@@ -111,7 +111,10 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
         for typ in [cwl_utils.parser.cwl_v1_0.CommandInputParameter,
                     cwl_utils.parser.cwl_v1_1.CommandInputParameter,
-                    cwl_utils.parser.cwl_v1_2.CommandInputParameter]:
+                    cwl_utils.parser.cwl_v1_2.CommandInputParameter,
+                    cwl_utils.parser.cwl_v1_0.CommandOutputParameter,
+                    cwl_utils.parser.cwl_v1_1.CommandOutputParameter,
+                    cwl_utils.parser.cwl_v1_2.CommandOutputParameter]:
             self.CWL_TYPES[typ] = self.on_input_parameter
 
         for typ in [cwl_utils.parser.cwl_v1_0.InputArraySchema,
