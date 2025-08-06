@@ -23,4 +23,6 @@ jobs:
         tag=$( awk -F'"' '/__version__/ {print $2}' src/cwl2ogc/__about__.py )
         IMAGE_ID=ghcr.io/eoap/cwl2ogc/playground
         docker build playground --file playground/Dockerfile --tag ${IMAGE_ID}:${tag}
+        docker build playground --file playground/Dockerfile --tag ${IMAGE_ID}:latest
+        docker push ${IMAGE_ID}:latest
         docker push ${IMAGE_ID}:${tag}
