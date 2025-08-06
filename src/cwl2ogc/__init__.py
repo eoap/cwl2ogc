@@ -2,7 +2,22 @@
 #
 # SPDX-License-Identifier: MIT
 
-from cwl_utils.parser import load_document_by_yaml
+from cwl_utils.parser import (
+    load_document_by_yaml,
+    CommandInputParameter,
+    CommandOutputParameter,
+    Directory,
+    EnumSchema,
+    File,
+    InputArraySchema,
+    InputEnumSchema,
+    InputParameter,
+    InputRecordSchema,
+    OutputArraySchema,
+    OutputEnumSchema,
+    OutputParameter,
+    OutputRecordSchema
+)
 from loguru import logger
 from urllib.parse import urlparse
 from typing import (
@@ -18,6 +33,30 @@ import json
 import yaml
 import requests
 import os
+
+CommandInputEnumSchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
+                               cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
+                               cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]
+
+CommandOutputEnumSchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputEnumSchema,
+                                cwl_utils.parser.cwl_v1_1.CommandOutputEnumSchema,
+                                cwl_utils.parser.cwl_v1_2.CommandOutputEnumSchema]
+
+CommandInputRecordSchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
+                                 cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
+                                 cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]
+
+CommandInputArraySchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
+                                cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
+                                cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]
+
+CommandOutputArraySchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
+                                 cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
+                                 cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]
+
+CommandOutputRecordSchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
+                                  cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
+                                  cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]
 
 class CWLtypes2OGCConverter:
 
@@ -79,65 +118,52 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     def __init__(self, cwl):
         self.cwl = cwl
 
-        self.CWL_TYPES["int"] = lambda input : { "type": "integer", "format": "int32" }
-        self.CWL_TYPES["long"] = lambda input : { "type": "integer", "format": "int64" }
-        self.CWL_TYPES["double"] = lambda input : { "type": "number", "format": "double" }
-        self.CWL_TYPES["float"] = lambda input : { "type": "number", "format": "float" }
-        self.CWL_TYPES["boolean"] = lambda input : { "type": "boolean" }
-        self.CWL_TYPES["string"] = lambda input : { "type": "string" }
-        self.CWL_TYPES["stdout"] = self.CWL_TYPES["string"]
+        def _map_type(type_: Any, map_function: Any) -> None:
+            if isinstance(type_, list):
+                for typ in type_:
+                    _map_type(typ, map_function)
+            elif get_origin(type_) is Union:
+                for typ in get_args(type_):
+                    _map_type(typ, map_function)
+            else:
+               self.CWL_TYPES[type_] = map_function
+            
+        _map_type("int", lambda input : { "type": "integer", "format": "int32" })
+        _map_type("long", lambda input : { "type": "integer", "format": "int64" })
+        _map_type("double", lambda input : { "type": "number", "format": "double" })
+        _map_type("float", lambda input : { "type": "number", "format": "float" })
+        _map_type("boolean", lambda input : { "type": "boolean" })
+        _map_type(["string", "stdout"], lambda input : { "type": "string" })
 
-        for typ in ["File",
-                    cwl_utils.parser.cwl_v1_0.File,
-                    cwl_utils.parser.cwl_v1_1.File,
-                    cwl_utils.parser.cwl_v1_2.File,
-                    "Directory",
-                    cwl_utils.parser.cwl_v1_0.Directory,
-                    cwl_utils.parser.cwl_v1_1.Directory,
-                    cwl_utils.parser.cwl_v1_2.Directory]:
-            self.CWL_TYPES[typ] = lambda input : { "type": "string", "format": "uri" }
+        _map_type(["File", File, "Directory", Directory], lambda input : { "type": "string", "format": "uri" })
 
         # these are not correctly interpreted as CWL types
-        self.CWL_TYPES["record"] = self.on_record
-        self.CWL_TYPES["enum"] = self.on_enum
-        self.CWL_TYPES["array"] = self.on_array
+        _map_type("record", self.on_record)
+        _map_type("enum", self.on_enum)
+        _map_type("array", self.on_array)
 
-        self.CWL_TYPES[list] = self.on_list
+        _map_type(list, self.on_list)
 
-        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
-                    cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
-                    cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]:
-            self.CWL_TYPES[typ] = self.on_enum_schema
+        _map_type([CommandInputEnumSchema,
+                   CommandOutputEnumSchema,
+                   EnumSchema,
+                   InputEnumSchema,
+                   OutputEnumSchema], self.on_enum_schema)
 
-        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputParameter,
-                    cwl_utils.parser.cwl_v1_1.CommandInputParameter,
-                    cwl_utils.parser.cwl_v1_2.CommandInputParameter,
-                    cwl_utils.parser.cwl_v1_0.CommandOutputParameter,
-                    cwl_utils.parser.cwl_v1_1.CommandOutputParameter,
-                    cwl_utils.parser.cwl_v1_2.CommandOutputParameter]:
-            self.CWL_TYPES[typ] = self.on_input_parameter
+        _map_type([CommandInputParameter,
+                   CommandOutputParameter,
+                   InputParameter,
+                   OutputParameter], self.on_input_parameter)
 
-        for typ in [cwl_utils.parser.cwl_v1_0.InputArraySchema,
-                    cwl_utils.parser.cwl_v1_1.InputArraySchema,
-                    cwl_utils.parser.cwl_v1_2.InputArraySchema,
-                    cwl_utils.parser.cwl_v1_0.OutputArraySchema,
-                    cwl_utils.parser.cwl_v1_1.OutputArraySchema,
-                    cwl_utils.parser.cwl_v1_2.OutputArraySchema,
-                    cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
-                    cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
-                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema,
-                    cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
-                    cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
-                    cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]:
-            self.CWL_TYPES[typ] = self.on_input_array_schema
+        _map_type([CommandInputArraySchema,
+                   CommandOutputArraySchema,
+                   InputArraySchema,
+                   OutputArraySchema], self.on_input_array_schema)
 
-        for typ in [cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
-                    cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
-                    cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema,
-                    cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
-                    cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
-                    cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]:
-            self.CWL_TYPES[typ] = self.on_record_schema
+        _map_type([CommandInputRecordSchema,
+                   CommandOutputRecordSchema,
+                   InputRecordSchema,
+                   OutputRecordSchema], self.on_record_schema)
 
     def clean_name(self, name: str) -> str:
         return name[name.rfind('/') + 1:]
@@ -216,23 +242,24 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return type
 
     def on_list(self, input):
-        nullable = self.is_nullable(input)
-
         input_list = {
-            "nullable": nullable
+            "nullable": self.is_nullable(input)
         }
 
-        if 1 == len(input.type_):
-            input_list.update(self.on_input(input.type_[0]))
-        elif nullable and 2 == len(input.type_):
-            for item in input.type_:
-                if "null" != item:
-                    input_list.update(self.on_input(item))
+        inputs_schema = list(
+            map(
+                lambda item: self.on_input(item),
+                filter(
+                    lambda current: "null" != current,
+                    input.type_
+                )
+            )
+        )
+
+        if 1 == len(inputs_schema):
+            input_list.update(inputs_schema[0])
         else:
-            input_list["anyOf"] = []
-            for item in input.type_:
-                if "null" != item:
-                    input_list["anyOf"].append(self.on_input(item))
+            input_list["anyOf"] = inputs_schema
 
         return input_list
 
