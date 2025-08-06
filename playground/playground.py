@@ -141,8 +141,9 @@ if response_dict["type"] == "submit":
 
         inputs = converter.get_inputs()
         outputs = converter.get_outputs()
+        schema = converter.get_schema()
 
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.subheader("Inputs")
             st.json(inputs)
@@ -151,5 +152,9 @@ if response_dict["type"] == "submit":
             st.subheader("Outputs")
             st.json(outputs)
 
+        with col3:
+            st.subheader("JSON schema")
+            st.json(schema)
+            
     except Exception as e:
         st.error(f"Error parsing CWL: {e}")
