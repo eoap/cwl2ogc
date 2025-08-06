@@ -25,3 +25,10 @@ tasks:
     - task: run-playground
       vars: 
         IMAGE_NAME: docker.io/library/playground
+
+  playground: 
+    desc: Run the local playground app
+    cmds:
+    - |
+      cd playground
+      streamlit run playground.py
