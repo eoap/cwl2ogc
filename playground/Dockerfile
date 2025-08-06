@@ -21,15 +21,18 @@ RUN groupadd -g 2000 neo && \
 # Switch to the non-root user
 USER neo
 
+
 # Copy the application files into the /code directory
 COPY --chown=2000:2000 . /app
 
 # Set working directory
 WORKDIR /app
 
+
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install streamlit "cwl2ogc>=0.4.0" streamlit_code_editor cwltool
+    pip install -e . && \
+    pip install streamlit streamlit_code_editor cwltool
 # Copy app code
 COPY --chown=2000:2000 . .
 
@@ -39,4 +42,4 @@ EXPOSE 8501
 ENV PATH="/home/neo/.local/bin:${PATH}"
 
 # Run Streamlit app
-CMD ["streamlit", "run", "playground.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "playground/playground.py", "--server.port=8501", "--server.address=0.0.0.0"]
