@@ -6,7 +6,8 @@ on:
     - main
 
     paths:
-    - 'playground/**'
+    - playground/**
+    - .github/**
 
 jobs:
 
