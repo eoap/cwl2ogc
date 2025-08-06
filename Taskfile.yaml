@@ -10,7 +10,7 @@ tasks:
     desc: Build the playground container
     cmds:
     - |
-      docker build -t docker.io/library/playground -f playground/Dockerfile playground/
+      docker build -t playground -f playground/Dockerfile .
 
   run-playground:
     desc: Run the playground container
@@ -23,13 +23,13 @@ tasks:
     desc: Build and run the playground container
     cmds:
     - task: build-playground-dev
-    - task: run-playground
-      vars: 
-        IMAGE_NAME: docker.io/library/playground
+    - |
+      docker run --rm -it -p 80:8501 playground
 
   playground: 
     desc: Run the local playground app
     cmds:
     - |
+      pip install streamlit streamlit_code_editor cwltool
       cd playground
       streamlit run playground.py
