@@ -1,26 +1,118 @@
+import os
+import json
 import streamlit as st
 from cwl2ogc import load_converter_from_string_content
+from code_editor import code_editor
 
 
+st.header("CWL to OGC API Processes inputs/outputs")
 
-st.title("CWL to OGC API Processes inputs/outputs")
 
-# Input TextArea
-input_text = st.text_area("Enter your CWL here", height=200)
+btn_settings_editor_btns = [
+    {
+        "name": "copy",
+        "feather": "Copy",
+        "hasText": True,
+        "alwaysOn": True,
+        "commands": ["copyAll"],
+        "style": {"top": "0rem", "right": "0.4rem"},
+    },
+    {
+        "name": "update",
+        "feather": "RefreshCw",
+        "primary": True,
+        "hasText": True,
+        "showWithIcon": True,
+        "commands": ["submit"],
+        "style": {"bottom": "0rem", "right": "0.4rem"},
+    },
+]
 
-# Button
-if st.button("Process Text"):
-    if input_text.strip() == "":
-        st.warning("Please enter some text before processing.")
-    else:
-        converter = load_converter_from_string_content(input_text)
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources/custom_buttons_bar_alt.json")) as json_button_file_alt:
+    custom_buttons_alt = json.load(json_button_file_alt)
+
+height = [22, 25]
+language = "yaml"
+theme = "default"
+shortcuts = "vscode"
+focus = False
+wrap = True
+btns = custom_buttons_alt
+
+example_cwl = """\
+cwlVersion: v1.2
+class: CommandLineTool
+id: array-inputs
+inputs:
+  filesA:
+    label: filesA label
+    doc: filesA doc
+    type: string[]
+    inputBinding:
+      prefix: -A
+      position: 1
+
+  filesB:
+    label: filesB label
+    doc: filesB doc
+    type:
+      type: array
+      items: string
+      inputBinding:
+        prefix: -B=
+        separate: false
+    inputBinding:
+      position: 2
+
+  filesC:
+    label: filesC label
+    doc: filesC doc
+    type: string[]
+    inputBinding:
+      prefix: -C=
+      itemSeparator: ","
+      separate: false
+      position: 4
+
+outputs:
+  example_out:
+    type: stdout
+stdout: output.txt
+baseCommand: echo
+"""
+
+ace_props = {"style": {"borderRadius": "0px 0px 8px 8px"}}
+response_dict = code_editor(
+    example_cwl,
+    height=height,
+    lang=language,
+    theme=theme,
+    shortcuts=shortcuts,
+    focus=focus,
+    buttons=btns,
+    props=ace_props,
+    options={"wrap": wrap},
+    allow_reset=True,
+    key="code_editor_demo",
+)
+
+if response_dict["type"] == "submit":
+    cwl_content = response_dict["text"]
+
+    try:
+        converter = load_converter_from_string_content(cwl_content)
 
         inputs = converter.get_inputs()
         outputs = converter.get_outputs()
 
-        # Display Output Areas
-        st.subheader("OGC API Processes inputs")
-        st.json(inputs)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Inputs")
+            st.json(inputs)
 
-        st.subheader("OGC API Processes outputs")
-        st.json(outputs)
+        with col2:
+            st.subheader("Outputs")
+            st.json(outputs)
+
+    except Exception as e:
+        st.error(f"Error parsing CWL: {e}")

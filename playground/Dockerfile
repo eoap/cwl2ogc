@@ -11,7 +11,7 @@ WORKDIR /app
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install streamlit cwl2ogc>=0.4.0
+    pip install streamlit cwl2ogc>=0.4.0 streamlit_code_editor
 # Copy app code
 COPY . .
 
