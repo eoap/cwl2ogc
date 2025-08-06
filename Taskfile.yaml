@@ -16,6 +16,7 @@ tasks:
     desc: Run the playground container
     cmds:
     - |
+      docker pull {{.IMAGE_NAME}}
       docker run --rm -it -p 80:8501 {{.IMAGE_NAME}}
 
   run-playground-dev:
