@@ -56,6 +56,11 @@ jobs:
   container-build:
 
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+
+    needs: deploy
 
     steps:
     - uses: actions/checkout@v2
