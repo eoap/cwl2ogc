@@ -48,11 +48,11 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://upload.pypi.org/legacy/
-    - name: Publish package distributions to PyPI (develop)
-      if: github.ref != 'refs/heads/main' 
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
+    # - name: Publish package distributions to PyPI (develop)
+    #   if: github.ref != 'refs/heads/main' 
+    #   uses: pypa/gh-action-pypi-publish@release/v1
+    #   with:
+    #     repository-url: https://test.pypi.org/legacy/
 
   container-build:
 
@@ -60,6 +60,8 @@ jobs:
     environment: release
     permissions:
       id-token: write
+      contents: read
+      packages: write
 
     needs: deploy
 
