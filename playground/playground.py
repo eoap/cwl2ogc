@@ -3,9 +3,38 @@ import json
 import streamlit as st
 from cwl2ogc import load_converter_from_string_content
 from code_editor import code_editor
-
+import tempfile
+from io import StringIO
+import yaml
+from cwltool.main import main as cwltool
 
 st.header("CWL to OGC API Processes inputs/outputs")
+
+def validate_cwl(cwl_content):
+    """Checks whether the CWL file meets basic conformance criteria.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the return value of cwltool and
+        the stdout and stderr content
+    """
+    temp_dir = tempfile.mkdtemp()
+    temp_cwl_path = os.path.join(temp_dir, "temp_cwl")
+ 
+    with open(temp_cwl_path, "w") as outfile:
+        yaml.dump(cwl_content, outfile, default_flow_style=False)
+
+    out = StringIO()
+    err = StringIO()
+    res = cwltool(
+        ["--validate", temp_cwl_path],
+        stderr=out,
+        stdout=err,
+    )
+    os.remove(temp_cwl_path)
+
+    return res, out.getvalue(), err.getvalue()
 
 
 btn_settings_editor_btns = [
@@ -100,6 +129,14 @@ if response_dict["type"] == "submit":
     cwl_content = response_dict["text"]
 
     try:
+        res, out, err = validate_cwl(yaml.load(cwl_content, Loader=yaml.FullLoader))
+
+        if res != 0:
+            st.error(f"Validation failed with error code {res}.")
+            st.text_area("Validation Output", value=out, height=10)
+            st.text_area("Validation Error", value=err, height=300)
+            st.stop()
+
         converter = load_converter_from_string_content(cwl_content)
 
         inputs = converter.get_inputs()

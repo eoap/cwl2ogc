@@ -29,7 +29,7 @@ WORKDIR /app
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install streamlit "cwl2ogc>=0.4.0" streamlit_code_editor
+    pip install streamlit "cwl2ogc>=0.4.0" streamlit_code_editor cwltool
 # Copy app code
 COPY --chown=2000:2000 . .
 
