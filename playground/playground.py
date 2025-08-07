@@ -9,6 +9,7 @@ import yaml
 from cwltool.main import main as cwltool
 
 st.header("CWL to OGC API Processes inputs/outputs")
+st.set_page_config(layout="wide")
 
 def validate_cwl(cwl_content):
     """Checks whether the CWL file meets basic conformance criteria.
@@ -141,20 +142,25 @@ if response_dict["type"] == "submit":
 
         inputs = converter.get_inputs()
         outputs = converter.get_outputs()
-        schema = converter.get_schema()
+        inputs_schema = converter.get_inputs_json_schema()
+        outputs_schema = converter.get_outputs_json_schema()
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.subheader("Inputs")
+            st.subheader("Inputs OGC definition")
             st.json(inputs)
 
         with col2:
-            st.subheader("Outputs")
+            st.subheader("Outputs OGC definition")
             st.json(outputs)
 
         with col3:
-            st.subheader("JSON schema")
-            st.json(schema)
+            st.subheader("Inputs JSON schema")
+            st.json(inputs_schema)
+
+        with col4:
+            st.subheader("Outputs JSON schema")
+            st.json(outputs_schema)
             
     except Exception as e:
         st.error(f"Error parsing CWL: {e}")
