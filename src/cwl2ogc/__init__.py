@@ -359,6 +359,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
             "type": "object",
             "required": [],
             "properties": {},
+            "additionalProperties": False,
             "$defs": {}
         }
 
