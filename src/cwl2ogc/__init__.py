@@ -348,37 +348,36 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
     def get_outputs(self):
         return self._to_ogc(params=self.cwl.outputs)
+    
+    def _to_json_schema(self, parameters: dict, label: str) -> dict:
+        id = self.cwl.id.split('#')[-1]
 
-    def _to_schema_parameters(self, parameters):
         schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": f"https://eoap.github.io/cwl2ogc/{id}/{label}.yaml",
+            "description": f"The schema to represent a {id} {label} definition",
             "type": "object",
             "required": [],
-            "properties": {}
+            "properties": {},
+            "$defs": {}
         }
 
         for k, v in parameters.items():
+            schema["properties"][k] = { "$ref": f"#/$defs/{k}" }
+
             property_schema = v["schema"]
-            schema["properties"][k] = property_schema
+            schema["$defs"][k] = property_schema
 
             if "nullable" not in property_schema or not property_schema["nullable"]:
                 schema["required"].append(k)
 
         return schema
 
-    def get_schema(self):
-        schema = {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": f"https://eoap.github.io/cwl2ogc/v1/{self.cwl.id}.yaml",
-            "description": f"The schema to represent a {self.cwl.id} inputs/outputs definition",
-            "type": "object",
-            "required": ["inputs"],
-            "properties": {
-                "inputs": self._to_schema_parameters(self.get_inputs()),
-            },
-            "additionalProperties": True
-        }
-
-        return schema
+    def get_inputs_json_schema(self) -> dict:
+        return self._to_json_schema(self.get_inputs(), "inputs")
+    
+    def get_outputs_json_schema(self) -> dict:
+        return self._to_json_schema(self.get_outputs(), "outputs")
 
     def _dump(self, data: dict, stream: Any, pretty_print: bool):
         json.dump(data, stream, indent=2 if pretty_print else None)
@@ -389,8 +388,11 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
     def dump_outputs(self, stream: Any, pretty_print: bool = False):
         self._dump(data=self.get_outputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_schema(self, stream: Any, pretty_print: bool = False):
-        self._dump(data=self.get_schema(), stream=stream, pretty_print=pretty_print)
+    def dump_inputs_json_schema(self, stream: Any, pretty_print: bool = False):
+        self._dump(data=self.get_inputs_json_schema(), stream=stream, pretty_print=pretty_print)
+
+    def dump_outputs_json_schema(self, stream: Any, pretty_print: bool = False):
+        self._dump(data=self.get_outputs_json_schema(), stream=stream, pretty_print=pretty_print)
 
 def _is_url(path_or_url: str) -> bool:
     try:
