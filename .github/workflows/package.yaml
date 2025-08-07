@@ -17,6 +17,7 @@ on:
     
 permissions:
   contents: read
+  packages: write
 
 jobs:
   deploy:
@@ -52,3 +53,26 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/
+
+  container-build:
+
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
+    needs: deploy
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: build & push image
+      run: |
+        tag=$( awk -F'"' '/__version__/ {print $2}' src/cwl2ogc/__about__.py )
+        IMAGE_ID=ghcr.io/eoap/cwl2ogc/playground
+        docker build . --file playground/Dockerfile --tag ${IMAGE_ID}:${tag} 
+        docker build . --file playground/Dockerfile --tag ${IMAGE_ID}:latest 
+        docker push ${IMAGE_ID}:latest
+        docker push ${IMAGE_ID}:${tag}

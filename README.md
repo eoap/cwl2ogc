@@ -6,6 +6,29 @@ A key part of the deploy operation involves parsing the CWL document to generate
 
 The **cwl2ogc** Python library is a helper library to automate the conversion of CWL input/output definitions into OGC API - Processes input/output schemas.
 
+## Using the Playground
+
+**Requirements**
+
+- docker
+- task 
+
+**Run the Playground container**
+
+```bash
+task run-playground
+```
+
+Open the browser at [http://127.0.0.1](http://127.0.0.1)
+
+**Build and run the Playground container** 
+
+```bash
+task run-playground-dev
+```
+
+Open the browser at [http://127.0.0.1](http://127.0.0.1)
+
 ## Contribute
 
 Submit a [Github issue](https://github.com/eoap/cwl2ogc/issues) if you have comments or suggestions.

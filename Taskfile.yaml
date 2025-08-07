@@ -1,0 +1,35 @@
+version: '3'
+  
+vars:
+  IMAGE_NAME: ghcr.io/eoap/cwl2ogc/playground:latest
+
+tasks:
+  
+  build-playground-dev:
+    internal: true
+    desc: Build the playground container
+    cmds:
+    - |
+      docker build -t playground -f playground/Dockerfile .
+
+  run-playground:
+    desc: Run the playground container
+    cmds:
+    - |
+      docker pull {{.IMAGE_NAME}}
+      docker run --rm -it -p 80:8501 {{.IMAGE_NAME}}
+
+  run-playground-dev:
+    desc: Build and run the playground container
+    cmds:
+    - task: build-playground-dev
+    - |
+      docker run --rm -it -p 80:8501 playground
+
+  playground: 
+    desc: Run the local playground app
+    cmds:
+    - |
+      pip install streamlit streamlit_code_editor cwltool
+      cd playground
+      streamlit run playground.py
