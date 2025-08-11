@@ -1,9 +1,14 @@
-# SPDX-FileCopyrightText: 2025-present Fabrice Brito <fabrice.brito@terradue.com>
-#
-# SPDX-License-Identifier: MIT
+"""
+CWL2OGC (c) 2025
+
+CWL2OGC is licensed under
+Creative Commons Attribution-ShareAlike 4.0 International.
+
+You should have received a copy of the license along with this work.
+If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+"""
 
 from cwl_utils.parser import (
-    load_document_by_yaml,
     CommandInputParameter,
     CommandOutputParameter,
     Directory,
@@ -16,106 +21,120 @@ from cwl_utils.parser import (
     OutputArraySchema,
     OutputEnumSchema,
     OutputParameter,
-    OutputRecordSchema
+    OutputRecordSchema,
+    Process
 )
+from io import IOBase
 from loguru import logger
-from urllib.parse import urlparse
 from typing import (
     Any,
     get_args,
     get_origin,
+    TypeVar,
     Union
 )
 import cwl_utils
-import gzip
-import io
 import json
-import yaml
-import requests
-import os
 
-CommandInputEnumSchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
-                               cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
-                               cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]
+Stream = TypeVar('Stream', bound=IOBase)
+'''A single CWL Process or a list of Processes union type.'''
 
-CommandOutputEnumSchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputEnumSchema,
-                                cwl_utils.parser.cwl_v1_1.CommandOutputEnumSchema,
-                                cwl_utils.parser.cwl_v1_2.CommandOutputEnumSchema]
+Processes = TypeVar('Processes', bound=Union[Process, list[Process]])
+'''A single CWL Process or a list of Processes union type.'''
 
-CommandInputRecordSchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
-                                 cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
-                                 cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]
+__CommandInputEnumSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
+                                   cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
+                                   cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]
 
-CommandInputArraySchema = Union[cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
-                                cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
-                                cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]
+__CommandOutputEnumSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputEnumSchema,
+                                    cwl_utils.parser.cwl_v1_1.CommandOutputEnumSchema,
+                                    cwl_utils.parser.cwl_v1_2.CommandOutputEnumSchema]
 
-CommandOutputArraySchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
-                                 cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
-                                 cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]
+__CommandInputRecordSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
+                                     cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
+                                     cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]
 
-CommandOutputRecordSchema = Union[cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
-                                  cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
-                                  cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]
+__CommandInputArraySchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
+                                    cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
+                                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]
 
-class CWLtypes2OGCConverter:
+__CommandOutputArraySchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
+                                     cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
+                                     cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]
 
-    def on_enum(input):
+__CommandOutputRecordSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
+                                      cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
+                                      cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]
+
+__STRING_FORMAT_URL__ = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'
+
+__STRING_FORMATS__ = {
+    'Date': "date",
+    'DateTime': "date-time",
+    'Duration': "duration",
+    'Email': "email",
+    'Hostname': "hostname",
+    'IDNEmail': "idn-email",
+    'IDNHostname': "idn-hostname",
+    'IPv4': "ipv4",
+    'IPv6': "ipv6",
+    'IRI': "iri",
+    'IRIReference': "iri-reference",
+    'JsonPointer': "json-pointer",
+    'Password': "password",
+    'RelativeJsonPointer': "relative-json-pointer",
+    'UUID': "uuid",
+    'URI': "uri",
+    'URIReference': "uri-reference",
+    'URITemplate': "uri-template",
+    'Time': "time"
+}
+
+class __CWLtypes2OGCConverter__:
+
+    def _on_enum(input):
         pass
 
-    def on_enum_schema(input):
+    def _on_enum_schema(input):
         pass
 
-    def on_array(input):
+    def _on_array(input):
         pass
 
-    def on_input_array_schema(input):
+    def _on_input_array_schema(input):
         pass
 
-    def on_input_parameter(input):
+    def _on_input_parameter(input):
         pass
 
-    def on_input(input):
+    def _on_input(input):
         pass
 
-    def on_list(input):
+    def _on_list(input):
         pass
 
-    def on_record(input):
+    def _on_record(input):
         pass
 
-    def on_record_schema(input):
+    def _on_record_schema(input):
         pass
 
-class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
+class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
+    '''
+    A helper class to automate the conversion of CWL input/output definitions into OGC API - Processes and JSON Schemas.
+    '''
+    _CWL_TYPES__ = {}
 
-    STRING_FORMAT_URL = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'
+    def __init__(self, cwl: Processes):
+        '''
+        Initializes the converter, given the CWL document where extracting informations from.
 
-    STRING_FORMATS = {
-        'Date': "date",
-        'DateTime': "date-time",
-        'Duration': "duration",
-        'Email': "email",
-        'Hostname': "hostname",
-        'IDNEmail': "idn-email",
-        'IDNHostname': "idn-hostname",
-        'IPv4': "ipv4",
-        'IPv6': "ipv6",
-        'IRI': "iri",
-        'IRIReference': "iri-reference",
-        'JsonPointer': "json-pointer",
-        'Password': "password",
-        'RelativeJsonPointer': "relative-json-pointer",
-        'UUID': "uuid",
-        'URI': "uri",
-        'URIReference': "uri-reference",
-        'URITemplate': "uri-template",
-        'Time': "time"
-    }
+        Args:
+            `cwl` (`Processes`): The CWL document object model
 
-    CWL_TYPES = {}
-
-    def __init__(self, cwl):
+        Returns:
+            `None`: none.
+        '''
         self.cwl = cwl
 
         def _map_type(type_: Any, map_function: Any) -> None:
@@ -126,8 +145,8 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
                 for typ in get_args(type_):
                     _map_type(typ, map_function)
             else:
-               self.CWL_TYPES[type_] = map_function
-            
+               self._CWL_TYPES__[type_] = map_function
+
         _map_type("int", lambda input : { "type": "integer", "format": "int32" })
         _map_type("long", lambda input : { "type": "integer", "format": "int64" })
         _map_type("double", lambda input : { "type": "number", "format": "double" })
@@ -138,99 +157,99 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         _map_type(["File", File, "Directory", Directory], lambda input : { "type": "string", "format": "uri" })
 
         # these are not correctly interpreted as CWL types
-        _map_type("record", self.on_record)
-        _map_type("enum", self.on_enum)
-        _map_type("array", self.on_array)
+        _map_type("record", self._on_record)
+        _map_type("enum", self._on_enum)
+        _map_type("array", self._on_array)
 
-        _map_type(list, self.on_list)
+        _map_type(list, self._on_list)
 
-        _map_type([CommandInputEnumSchema,
-                   CommandOutputEnumSchema,
+        _map_type([__CommandInputEnumSchema__,
+                   __CommandOutputEnumSchema__,
                    EnumSchema,
                    InputEnumSchema,
-                   OutputEnumSchema], self.on_enum_schema)
+                   OutputEnumSchema], self._on_enum_schema)
 
         _map_type([CommandInputParameter,
                    CommandOutputParameter,
                    InputParameter,
-                   OutputParameter], self.on_input_parameter)
+                   OutputParameter], self._on_input_parameter)
 
-        _map_type([CommandInputArraySchema,
-                   CommandOutputArraySchema,
+        _map_type([__CommandInputArraySchema__,
+                   __CommandOutputArraySchema__,
                    InputArraySchema,
-                   OutputArraySchema], self.on_input_array_schema)
+                   OutputArraySchema], self._on_input_array_schema)
 
-        _map_type([CommandInputRecordSchema,
-                   CommandOutputRecordSchema,
+        _map_type([__CommandInputRecordSchema__,
+                   __CommandOutputRecordSchema__,
                    InputRecordSchema,
-                   OutputRecordSchema], self.on_record_schema)
+                   OutputRecordSchema], self._on_record_schema)
 
-    def clean_name(self, name: str) -> str:
+    def _clean_name(self, name: str) -> str:
         return name[name.rfind('/') + 1:]
 
-    def is_nullable(self, input):
+    def _is_nullable(self, input):
         return hasattr(input, "type_") and  isinstance(input.type_, list) and "null" in input.type_
 
     # enum
 
-    def on_enum_internal(self, symbols):
+    def _on_enum_internal(self, symbols):
         return {
             "type": "string",
-            "enum": list(map(lambda symbol : self.clean_name(symbol), symbols))
+            "enum": list(map(lambda symbol : self._clean_name(symbol), symbols))
         }
 
-    def on_enum_schema(self, input):
-        return self.on_enum_internal(input.type_.symbols)
+    def _on_enum_schema(self, input):
+        return self._on_enum_internal(input.type_.symbols)
 
-    def on_enum(self, input):
-        return self.on_enum_internal(input.symbols)
+    def _on_enum(self, input):
+        return self._on_enum_internal(input.symbols)
 
-    def on_array_internal(self, items):
+    def _on_array_internal(self, items):
         return {
             "type": "array",
-            "items": self.on_input(items)
+            "items": self._on_input(items)
         }
 
-    def on_array(self, input):
-        return self.on_array_internal(input.items)
+    def _on_array(self, input):
+        return self._on_array_internal(input.items)
 
-    def on_input_array_schema(self, input):
-        return self.on_array_internal(input.type_.items)
+    def _on_input_array_schema(self, input):
+        return self._on_array_internal(input.type_.items)
 
-    def on_input_parameter(self, input):
+    def _on_input_parameter(self, input):
         logger.warning(f"input_parameter not supported yet: {input}")
         return {}
 
     def _warn_unsupported_type(self, typ: Any):
-        supported_types = '\n * '.join([str(k) for k in list(self.CWL_TYPES.keys())])
+        supported_types = '\n * '.join([str(k) for k in list(self._CWL_TYPES__.keys())])
         logger.warning(f"{typ} not supported yet, currently supporting only:\n * {supported_types}")
 
-    def search_type_in_dictionary(self, expected):
+    def _search_type_in_dictionary(self, expected):
         for requirement in getattr(self.cwl, "requirements", []):
             if ("SchemaDefRequirement" == requirement.class_):
                 for type in requirement.types:
                     if (expected == type.name):
-                        return self.on_input(type)
+                        return self._on_input(type)
 
         self._warn_unsupported_type(expected)
         return {}
 
-    def on_input(self, input):
+    def _on_input(self, input):
         type = {}
 
         if isinstance(input, str):
-            if input in self.CWL_TYPES:
-                type = self.CWL_TYPES.get(input)(input)
+            if input in self._CWL_TYPES__:
+                type = self._CWL_TYPES__.get(input)(input)
             else:
-                type = self.search_type_in_dictionary(input)
+                type = self._search_type_in_dictionary(input)
         elif hasattr(input, "type_"):
             if isinstance(input.type_, str):
-                if input.type_ in self.CWL_TYPES:
-                    type = self.CWL_TYPES.get(input.type_)(input)
+                if input.type_ in self._CWL_TYPES__:
+                    type = self._CWL_TYPES__.get(input.type_)(input)
                 else:
-                    type = self.search_type_in_dictionary(input.type_)
-            elif input.type_.__class__ in self.CWL_TYPES:
-                type = self.CWL_TYPES.get(input.type_.__class__)(input)
+                    type = self._search_type_in_dictionary(input.type_)
+            elif input.type_.__class__ in self._CWL_TYPES__:
+                type = self._CWL_TYPES__.get(input.type_.__class__)(input)
             else:
                 self._warn_unsupported_type(input.type_)
         else:
@@ -241,14 +260,14 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
         return type
 
-    def on_list(self, input):
+    def _on_list(self, input):
         input_list = {
-            "nullable": self.is_nullable(input)
+            "nullable": self._is_nullable(input)
         }
 
         inputs_schema = list(
             map(
-                lambda item: self.on_input(item),
+                lambda item: self._on_input(item),
                 filter(
                     lambda current: "null" != current,
                     input.type_
@@ -265,7 +284,7 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
 
     # record
 
-    def on_record_internal(self, record, fields):
+    def _on_record_internal(self, record, fields):
         record_name = ''
         if hasattr(record, "name"):
             record_name = record.name
@@ -274,8 +293,8 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         else:
             logger.warning(f"Impossible to detect {record.__dict__}, skipping name check...")
 
-        if self.STRING_FORMAT_URL in record_name:
-            return { "type": "string", "format": self.STRING_FORMATS.get(record.name.split('#')[-1]) }
+        if __STRING_FORMAT_URL__ in record_name:
+            return { "type": "string", "format": __STRING_FORMATS__.get(record.name.split('#')[-1]) }
 
         record = {
             "type": "object",
@@ -284,19 +303,19 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         }
 
         for field in fields:
-            field_id = self.clean_name(field.name)
-            record["properties"][field_id] = self.on_input(field)
+            field_id = self._clean_name(field.name)
+            record["properties"][field_id] = self._on_input(field)
 
-            if not self.is_nullable(field):
+            if not self._is_nullable(field):
                 record["required"].append(field_id)
 
         return record
 
-    def on_record_schema(self, input):
-        return self.on_record_internal(input, input.type_.fields)
+    def _on_record_schema(self, input):
+        return self._on_record_internal(input, input.type_.fields)
 
-    def on_record(self, input):
-        return self.on_record_internal(input, input.fields)
+    def _on_record(self, input):
+        return self._on_record_internal(input, input.fields)
 
     def _type_to_string(self, typ: Any) -> str:
         if get_origin(typ) is Union:
@@ -319,17 +338,17 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         
         return typ.__name__
 
-    def _to_ogc(self, params, is_input: bool = False):
+    def _to_ogc(self, params, is_input: bool = False) -> dict:
         ogc_map = {}
 
         for param in params:
             schema = {
-                "schema": self.on_input(param),
+                "schema": self._on_input(param),
                 "metadata": [ { "title": "cwl:type", "value": f"{self._type_to_string(param.type_)}" } ]
             }
 
             if is_input:
-                schema["minOccurs"] = 0 if self.is_nullable(param) else 1
+                schema["minOccurs"] = 0 if self._is_nullable(param) else 1
                 schema["maxOccurs"] = 1
                 schema["valuePassing"] = "byValue"
 
@@ -339,16 +358,28 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
             if param.doc:
                 schema["description"] = param.doc
 
-            ogc_map[self.clean_name(param.id)] = schema
+            ogc_map[self._clean_name(param.id)] = schema
 
         return ogc_map
 
-    def get_inputs(self):
+    def get_inputs(self) -> dict:
+        '''
+        Returns a dictionary representing OGC API - Processes inputs in-memory structure.
+
+        Returns:
+            `dict`: The generated dictionary representing OGC API - Processes inputs in-memory structure.
+        '''
         return self._to_ogc(params=self.cwl.inputs, is_input=True)
 
-    def get_outputs(self):
+    def get_outputs(self) -> dict:
+        '''
+        Returns a dictionary representing OGC API - Processes outputs in-memory structure.
+
+        Returns:
+            `dict`: The generated dictionary representing OGC API - Processes inputs in-memory structure.
+        '''
         return self._to_ogc(params=self.cwl.outputs)
-    
+
     def _to_json_schema(self, parameters: dict, label: str) -> dict:
         id = self.cwl.id.split('#')[-1]
 
@@ -375,67 +406,74 @@ class BaseCWLtypes2OGCConverter(CWLtypes2OGCConverter):
         return schema
 
     def get_inputs_json_schema(self) -> dict:
+        '''
+        Returns a dictionary representing the inputs JSON Schema in-memory structure.
+
+        Returns:
+            `dict`: The generated dictionary the inputs JSON Schema in-memory structure.
+        '''
         return self._to_json_schema(self.get_inputs(), "inputs")
     
     def get_outputs_json_schema(self) -> dict:
+        '''
+        Returns a dictionary representing the outputs JSON Schema in-memory structure.
+
+        Returns:
+            `dict`: The generated dictionary representing the outputs JSON Schema in-memory structure.
+        '''
         return self._to_json_schema(self.get_outputs(), "outputs")
 
-    def _dump(self, data: dict, stream: Any, pretty_print: bool):
+    def _dump(self, data: dict, stream: Stream, pretty_print: bool):
         json.dump(data, stream, indent=2 if pretty_print else None)
 
-    def dump_inputs(self, stream: Any, pretty_print: bool = False):
+    def dump_inputs(self, stream: Stream, pretty_print: bool = False):
+        '''
+        Dumps the OGC API - Processes inputs schema to its JSON representation.
+
+        Args:
+            `stream` (`Stream`): The stream where serializing the JSON representation
+            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
+
+        Returns:
+            `None`: none.
+        '''
         self._dump(data=self.get_inputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_outputs(self, stream: Any, pretty_print: bool = False):
+    def dump_outputs(self, stream: Stream, pretty_print: bool = False):
+        '''
+        Dumps the OGC API - Processes outputs schema to its JSON representation.
+
+        Args:
+            `stream` (`Stream`): The stream where serializing the JSON representation
+            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
+
+        Returns:
+            `None`: none.
+        '''
         self._dump(data=self.get_outputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_inputs_json_schema(self, stream: Any, pretty_print: bool = False):
+    def dump_inputs_json_schema(self, stream: Stream, pretty_print: bool = False):
+        '''
+        Dumps the inputs JSON Schema to its JSON representation.
+
+        Args:
+            `stream` (`Stream`): The stream where serializing the JSON representation
+            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
+
+        Returns:
+            `None`: none.
+        '''
         self._dump(data=self.get_inputs_json_schema(), stream=stream, pretty_print=pretty_print)
 
-    def dump_outputs_json_schema(self, stream: Any, pretty_print: bool = False):
+    def dump_outputs_json_schema(self, stream: Stream, pretty_print: bool = False):
+        '''
+        Dumps the outputs JSON Schema to its JSON representation.
+
+        Args:
+            `stream` (`Stream`): The stream where serializing the JSON representation
+            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
+
+        Returns:
+            `None`: none.
+        '''
         self._dump(data=self.get_outputs_json_schema(), stream=stream, pretty_print=pretty_print)
-
-def _is_url(path_or_url: str) -> bool:
-    try:
-        result = urlparse(path_or_url)
-        return all([result.scheme in ('http', 'https'), result.netloc])
-    except Exception:
-        return False
-
-def load_converter_from_location(path_or_url: str) -> BaseCWLtypes2OGCConverter:
-    if _is_url(path_or_url):
-        response = requests.get(path_or_url, stream=True)
-        response.raise_for_status()
-
-        # Read first 2 bytes to check for gzip
-        magic = response.raw.read(2)
-        remaining = response.raw.read()  # Read rest of the stream
-        combined = io.BytesIO(magic + remaining)
-
-        if magic == b'\x1f\x8b':
-            decompressed = gzip.GzipFile(fileobj=combined)
-            text_stream = io.TextIOWrapper(decompressed, encoding='utf-8')
-        else:
-            text_stream = io.TextIOWrapper(combined, encoding='utf-8')
-
-        return load_converter_from_stream(text_stream)
-    elif os.path.exists(path_or_url):
-        with open(path_or_url, 'r', encoding='utf-8') as f:
-            return load_converter_from_stream(f)
-    else:
-        raise ValueError(f"Invalid source {path_or_url}: not a URL or existing file path")
-
-def load_converter_from_string_content(content: str) -> BaseCWLtypes2OGCConverter:
-    return load_converter_from_stream(io.StringIO(content))
-
-def load_converter_from_stream(content: io.TextIOWrapper) -> BaseCWLtypes2OGCConverter:
-    cwl_content = yaml.safe_load(content)
-    return load_converter_from_yaml(cwl_content)
-
-def load_converter_from_yaml(cwl_content: dict) -> BaseCWLtypes2OGCConverter:
-    cwl = load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
-
-    if isinstance(cwl, list):
-        return [BaseCWLtypes2OGCConverter(cwl=swf) for swf in cwl]
-
-    return BaseCWLtypes2OGCConverter(cwl=cwl)
