@@ -32,7 +32,7 @@ Just instantiate a `cwl2ogc.BaseCWLtypes2OGCConverter` object, passing the parse
 
 - [cwl-utils](https://github.com/common-workflow-language/cwl-utils);
 - [cwltool](https://github.com/common-workflow-language/cwltool);
-- [cwl_loader](https://terradue.github.io/cwl_loader/).
+- [cwl-loader](https://terradue.github.io/cwl-loader/).
 
 ## Serializing
 
