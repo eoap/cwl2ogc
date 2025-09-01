@@ -71,7 +71,7 @@ exclude_lines = [
 skip-install = false
 
 dependencies = [
-  "cwl-utils==0.37",
+  "cwl-utils>=0.39",
   "loguru",
   "pyyaml",
   "nose2",
