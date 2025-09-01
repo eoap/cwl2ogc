@@ -16,14 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter jsonschema legacy-cgi pdocs
-      - run: pip install --no-cache-dir git+https://github.com/Terradue/cwl-loader@main
+      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter jsonschema legacy-cgi pdocs cwl-loader
       - run: pip install .
       - run: pdocs as_markdown --output_dir ./docs/api/latest --exclude_source --overwrite cwl2ogc
       - run: mkdocs gh-deploy --force
