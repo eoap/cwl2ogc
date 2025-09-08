@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+from .stac_item import STAC_ITEM_SCHEMA
 from cwl_utils.parser import (
     CommandInputParameter,
     CommandOutputParameter,
@@ -157,7 +158,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         _map_type(["File", File, "Directory", Directory], lambda input : {
                                                                             "oneOf": [
                                                                                 { "type": "string", "format": "uri" },
-                                                                                { "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json" }
+                                                                                STAC_ITEM_SCHEMA
                                                                             ]
                                                                         })
 
