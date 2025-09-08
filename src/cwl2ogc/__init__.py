@@ -154,7 +154,12 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         _map_type("boolean", lambda input : { "type": "boolean" })
         _map_type(["string", "stdout"], lambda input : { "type": "string" })
 
-        _map_type(["File", File, "Directory", Directory], lambda input : { "type": "string", "format": "uri" })
+        _map_type(["File", File, "Directory", Directory], lambda input : {
+                                                                            "oneOf": [
+                                                                                { "type": "string", "format": "uri" },
+                                                                                { "$ref": "https://raw.githubusercontent.com/radiantearth/stac-api-spec/refs/tags/v1.0.0/stac-spec/item-spec/json-schema/item.json" }
+                                                                            ]
+                                                                        })
 
         # these are not correctly interpreted as CWL types
         _map_type("record", self._on_record)
