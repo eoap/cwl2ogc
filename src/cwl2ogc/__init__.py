@@ -9,6 +9,7 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 from .stac_item import STAC_ITEM_SCHEMA
+from .stac_collection import STAC_COLLECTION_SCHEMA
 from abc import (
     ABC,
     abstractmethod
@@ -197,12 +198,20 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         _map_type("boolean", lambda input : { "type": "boolean" })
         _map_type(["string", "stdout"], lambda input : { "type": "string" })
 
-        _map_type(["File", File, "Directory", Directory], lambda input : {
-                                                                            "oneOf": [
-                                                                                { "type": "string", "format": "uri" },
-                                                                                STAC_ITEM_SCHEMA
-                                                                            ]
-                                                                        })
+        _map_type(["File", File], lambda input : {
+                                                    "oneOf": [
+                                                        { "type": "string", "format": "uri" },
+                                                        STAC_ITEM_SCHEMA
+                                                    ]
+                                                })
+        _map_type(["Directory", Directory], lambda input : {
+                                                            "oneOf": [
+                                                                { "type": "string", "format": "uri" },
+                                                                STAC_ITEM_SCHEMA,
+                                                                STAC_COLLECTION_SCHEMA
+                                                            ]
+                                                        })
+        
 
         # these are not correctly interpreted as CWL types
         _map_type("record", self._on_record)
