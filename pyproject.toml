@@ -27,10 +27,14 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "cwl-utils>=0.38",
+  "cwl-utils>=0.40",
   "loguru",
   "pyyaml",
+  "click",
 ]
+
+[project.scripts]
+cwl2ogc = "cwl2ogc.cli:main"
 
 [project.urls]
 Documentation = "https://github.com/eoap/cwl2ogc#readme"
@@ -71,7 +75,8 @@ exclude_lines = [
 skip-install = false
 
 dependencies = [
-  "cwl-utils>=0.39",
+  "cwl-utils>=0.40",
+  "click",
   "loguru",
   "pyyaml",
   "nose2",

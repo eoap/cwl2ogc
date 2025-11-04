@@ -72,6 +72,7 @@ nav:
     - complex-cwl-types.ipynb
     - imported-cwl-types.ipynb
     - string-formats.ipynb
+  - cli.md
   - schema.ipynb
   - API doc: api/latest/cwl2ogc.md
 
