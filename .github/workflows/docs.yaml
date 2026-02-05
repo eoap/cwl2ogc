@@ -16,7 +16,6 @@ name: docs
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       # Only rebuild website when docs have changed
