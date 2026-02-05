@@ -1,0 +1,74 @@
+# Copyright 2025 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write      # PyPI trusted publishing
+      packages: write     # GHCR
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install hatch
+
+      - name: Enforce version == git tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"          # vX.Y.Z
+          VERSION=$(awk -F'"' '/__version__/ {print $2}' src/cwl2ogc/__about__.py)
+
+          if [[ "v${VERSION}" != "${TAG}" ]]; then
+            echo "Version mismatch!"
+            echo "Git tag: ${TAG}"
+            echo "__version__: v${VERSION}"
+            exit 1
+          fi
+
+          echo "Version check passed: ${TAG}"
+
+      - name: Build package
+        run: hatch build
+
+      - name: Test package
+        run: hatch test
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Docker login
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build & push Docker image
+        run: |
+          IMAGE_ID=ghcr.io/eoap/cwl2ogc/playground
+          TAG="${GITHUB_REF_NAME}"   # vX.Y.Z
+
+          docker build . --file playground/Dockerfile --tag ${IMAGE_ID}:${TAG}
+          docker push ${IMAGE_ID}:${TAG}
