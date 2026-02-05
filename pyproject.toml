@@ -9,7 +9,7 @@ description = 'CWL Worflow inputs/outputs to OGC API Processes inputs/outputs'
 
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = "Apache-2.0"
 keywords = []
 authors = [
   { name = "Fabrice Brito", email = "info@terradue.com" },

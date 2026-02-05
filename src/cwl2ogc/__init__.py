@@ -1,20 +1,25 @@
-"""
-CWL2OGC (c) 2025
+# Copyright 2025 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-CWL2OGC is licensed under
-Creative Commons Attribution-ShareAlike 4.0 International.
-
-You should have received a copy of the license along with this work.
-If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
-"""
-
-from .stac_item import STAC_ITEM_SCHEMA
-from .stac_collection import STAC_COLLECTION_SCHEMA
 from abc import (
     ABC,
     abstractmethod
 )
 from cwl_utils.parser import (
+    cwl_v1_0,
+    cwl_v1_1,
+    cwl_v1_2,
     CommandInputParameter,
     CommandOutputParameter,
     Directory,
@@ -38,35 +43,36 @@ from typing import (
     get_origin,
     List,
     Mapping,
+    MutableMapping,
     TextIO,
     Union
 )
 import cwl_utils
 import json
 
-__CommandInputEnumSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputEnumSchema,
-                                   cwl_utils.parser.cwl_v1_1.CommandInputEnumSchema,
-                                   cwl_utils.parser.cwl_v1_2.CommandInputEnumSchema]
+__CommandInputEnumSchema__ = Union[cwl_v1_0.CommandInputEnumSchema,
+                                   cwl_v1_1.CommandInputEnumSchema,
+                                   cwl_v1_2.CommandInputEnumSchema]
 
-__CommandOutputEnumSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputEnumSchema,
-                                    cwl_utils.parser.cwl_v1_1.CommandOutputEnumSchema,
-                                    cwl_utils.parser.cwl_v1_2.CommandOutputEnumSchema]
+__CommandOutputEnumSchema__ = Union[cwl_v1_0.CommandOutputEnumSchema,
+                                    cwl_v1_1.CommandOutputEnumSchema,
+                                    cwl_v1_2.CommandOutputEnumSchema]
 
-__CommandInputRecordSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputRecordSchema,
-                                     cwl_utils.parser.cwl_v1_1.CommandInputRecordSchema,
-                                     cwl_utils.parser.cwl_v1_2.CommandInputRecordSchema]
+__CommandInputRecordSchema__ = Union[cwl_v1_0.CommandInputRecordSchema,
+                                     cwl_v1_1.CommandInputRecordSchema,
+                                     cwl_v1_2.CommandInputRecordSchema]
 
-__CommandInputArraySchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandInputArraySchema,
-                                    cwl_utils.parser.cwl_v1_1.CommandInputArraySchema,
-                                    cwl_utils.parser.cwl_v1_2.CommandInputArraySchema]
+__CommandInputArraySchema__ = Union[cwl_v1_0.CommandInputArraySchema,
+                                    cwl_v1_1.CommandInputArraySchema,
+                                    cwl_v1_2.CommandInputArraySchema]
 
-__CommandOutputArraySchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputArraySchema,
-                                     cwl_utils.parser.cwl_v1_1.CommandOutputArraySchema,
-                                     cwl_utils.parser.cwl_v1_2.CommandOutputArraySchema]
+__CommandOutputArraySchema__ = Union[cwl_v1_0.CommandOutputArraySchema,
+                                     cwl_v1_1.CommandOutputArraySchema,
+                                     cwl_v1_2.CommandOutputArraySchema]
 
-__CommandOutputRecordSchema__ = Union[cwl_utils.parser.cwl_v1_0.CommandOutputRecordSchema,
-                                      cwl_utils.parser.cwl_v1_1.CommandOutputRecordSchema,
-                                      cwl_utils.parser.cwl_v1_2.CommandOutputRecordSchema]
+__CommandOutputRecordSchema__ = Union[cwl_v1_0.CommandOutputRecordSchema,
+                                      cwl_v1_1.CommandOutputRecordSchema,
+                                      cwl_v1_2.CommandOutputRecordSchema]
 
 __STRING_FORMAT_URL__ = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'
 
@@ -161,7 +167,6 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
     '''
     A helper class to automate the conversion of CWL input/output definitions into OGC API - Processes and JSON Schemas.
     '''
-    _CWL_TYPES__ = {}
 
     def __init__(
         self,
@@ -177,6 +182,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
             `None`: none.
         '''
         self.cwl = cwl
+        self._CWL_TYPES__ = {}
 
         def _map_type(
             type_: Any,
@@ -201,14 +207,14 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         _map_type(["File", File], lambda input : {
                                                     "oneOf": [
                                                         { "type": "string", "format": "uri" },
-                                                        STAC_ITEM_SCHEMA
+                                                        { "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json" }
                                                     ]
                                                 })
         _map_type(["Directory", Directory], lambda input : {
                                                             "oneOf": [
                                                                 { "type": "string", "format": "uri" },
-                                                                STAC_ITEM_SCHEMA,
-                                                                STAC_COLLECTION_SCHEMA
+                                                                { "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json" },
+                                                                { "$ref": "https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json" }
                                                             ]
                                                         })
         
@@ -328,21 +334,21 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         self,
         input: Any
     ) -> Mapping[str, Any]:
-        type = {}
+        type: MutableMapping[str, Any] = {}
 
         if isinstance(input, str):
             if input in self._CWL_TYPES__:
-                type = self._CWL_TYPES__.get(input)(input) # type: ignore
+                type.update(self._CWL_TYPES__[input](input))
             else:
-                type = self._search_type_in_dictionary(input)
+                type.update(self._search_type_in_dictionary(input))
         elif hasattr(input, "type_"):
             if isinstance(input.type_, str):
                 if input.type_ in self._CWL_TYPES__:
-                    type = self._CWL_TYPES__.get(input.type_)(input) # type: ignore
+                    type.update(self._CWL_TYPES__[input.type_](input))
                 else:
-                    type = self._search_type_in_dictionary(input.type_)
+                    type.update(self._search_type_in_dictionary(input.type_))
             elif input.type_.__class__ in self._CWL_TYPES__:
-                type = self._CWL_TYPES__.get(input.type_.__class__)(input) # type: ignore
+                type.update(self._CWL_TYPES__[input.type_.__class__](input))
             else:
                 self._warn_unsupported_type(input.type_)
         else:
@@ -354,8 +360,8 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
 
         return type
 
-    def _on_list(self, input):
-        input_list = {
+    def _on_list(self, input) -> Mapping[str, Any]:
+        input_list: MutableMapping[str, Any] = {
             "nullable": self._is_nullable(input)
         }
 

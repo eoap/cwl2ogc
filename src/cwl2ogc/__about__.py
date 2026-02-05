@@ -1,13 +1,15 @@
-"""
-The CWL2OGC Python library is a helper library to automate the conversion of CWL input/output definitions into OGC API - Processes and JSON Schemas.
+# Copyright 2025 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-CWL2OGC (c) 2025
-
-CWL2OGC is licensed under
-Creative Commons Attribution-ShareAlike 4.0 International.
-
-You should have received a copy of the license along with this work.
-If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
-"""
-
-__version__ = "0.10.0"
+__version__ = "0.12.0"
