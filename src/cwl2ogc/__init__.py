@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .stac_item import STAC_ITEM_SCHEMA
-from .stac_collection import STAC_COLLECTION_SCHEMA
 from abc import (
     ABC,
     abstractmethod
@@ -209,14 +207,14 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         _map_type(["File", File], lambda input : {
                                                     "oneOf": [
                                                         { "type": "string", "format": "uri" },
-                                                        STAC_ITEM_SCHEMA
+                                                        { "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json" }
                                                     ]
                                                 })
         _map_type(["Directory", Directory], lambda input : {
                                                             "oneOf": [
                                                                 { "type": "string", "format": "uri" },
-                                                                STAC_ITEM_SCHEMA,
-                                                                STAC_COLLECTION_SCHEMA
+                                                                { "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json" },
+                                                                { "$ref": "https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json" }
                                                             ]
                                                         })
         
