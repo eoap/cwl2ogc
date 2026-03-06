@@ -82,7 +82,9 @@ def test_workflow_graph_conversion_for_water_bodies():
     cwl_graph = load_cwl_document(ARTIFACTS_DIR / "app-water-body.1.1.0.cwl")
     assert isinstance(cwl_graph, list)
 
-    workflow = next(entry for entry in cwl_graph if getattr(entry, "class_", None) == "Workflow")
+    workflow = next(
+        entry for entry in cwl_graph if getattr(entry, "class_", None) == "Workflow"
+    )
     converter = BaseCWLtypes2OGCConverter(workflow)
 
     inputs = converter.get_inputs()
