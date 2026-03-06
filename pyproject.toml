@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = 'CWL Worflow inputs/outputs to OGC API Processes inputs/outputs'
 
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "Apache-2.0"
 keywords = []
 authors = [
@@ -18,11 +18,11 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -72,6 +72,7 @@ exclude_lines = [
 
 
 [tool.hatch.envs.test]
+description = "Test environment"
 skip-install = false
 
 dependencies = [
@@ -79,14 +80,28 @@ dependencies = [
   "click",
   "loguru",
   "pyyaml",
-  "nose2",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
 ]
 
 
 [tool.hatch.envs.test.scripts]
-test = "hatch run nose2"
-testv = "hatch run nose2 --verbose"
-cov = ["coverage run --source=src/cwl2ogc -m nose2", "coverage report"]
+test = "pytest"
+test-q = "pytest -q"
+test-cov = "pytest --cov=cwl2ogc"
+test-show-setup = "pytest --setup-show"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+[tool.hatch.envs.dev]
+description = "Development environment"
+dependencies = [
+  "pytest>=8.0",
+  "ruff",
+]
+
+
+[tool.hatch.envs.dev.scripts]
+lint = "ruff format ."
+check = "ruff check --fix"

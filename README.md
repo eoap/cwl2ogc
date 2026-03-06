@@ -1,42 +1,104 @@
-# CWL Worflow inputs/outputs to OGC API Processes inputs/outputs
+# cwl2ogc
 
-The OGC API - Processes Part 2: Deploy, Replace, Undeploy (DRU) specification enables the deployment of executable Application Packages, such as CWL workflows, as processing services. 
+`cwl2ogc` converts CWL workflow/tool inputs and outputs into:
+- OGC API - Processes I/O descriptors
+- JSON Schema documents for those I/O definitions
 
-A key part of the deploy operation involves parsing the CWL document to generate an OGC-compliant process description, exposing the workflow’s inputs and outputs.
+This is useful when publishing CWL-based application packages through OGC API - Processes interfaces.
 
-The **cwl2ogc** Python library is a helper library to automate the conversion of CWL input/output definitions into OGC API - Processes and JSON Schemas
+## Why
 
-## Using the Playground
+The OGC API - Processes Deploy/Replace/Undeploy workflow requires a process description that exposes valid input and output metadata. `cwl2ogc` helps generate that description directly from CWL definitions.
 
-**Requirements**
+## Installation
 
-- docker
-- task 
+```bash
+pip install cwl2ogc
+```
 
-**Run the Playground container**
+Python `3.10+` is required.
+
+## Quick Start (CLI)
+
+Generate a process descriptor from a CWL document:
+
+```bash
+cwl2ogc tests/artifacts/cwl-types/inp.cwl \
+  --workflow-id inp \
+  --output process.json
+```
+
+Show command help:
+
+```bash
+cwl2ogc --help
+```
+
+## Quick Start (Python API)
+
+```python
+from cwl_utils.parser import load_document_by_uri
+from cwl2ogc import BaseCWLtypes2OGCConverter
+
+workflow = load_document_by_uri("tests/artifacts/cwl-types/inp.cwl#inp")
+converter = BaseCWLtypes2OGCConverter(workflow)
+
+inputs = converter.get_inputs()
+outputs = converter.get_outputs()
+
+inputs_json_schema = converter.get_inputs_json_schema()
+outputs_json_schema = converter.get_outputs_json_schema()
+```
+
+## Playground
+
+Requirements:
+- `docker`
+- `task`
+
+Run the published playground image:
 
 ```bash
 task run-playground
 ```
 
-Open the browser at [http://127.0.0.1](http://127.0.0.1)
-
-**Build and run the Playground container** 
+Build and run the local playground image:
 
 ```bash
 task run-playground-dev
 ```
 
-Open the browser at [http://127.0.0.1](http://127.0.0.1)
+Open [http://127.0.0.1](http://127.0.0.1).
 
-## Contribute
+## Development
 
-Submit a [Github issue](https://github.com/eoap/cwl2ogc/issues) if you have comments or suggestions.
+Install development tooling with Hatch and run checks:
+
+```bash
+hatch run test:test-q
+hatch run dev:check
+hatch run dev:lint
+```
+
+Equivalent Taskfile targets:
+
+```bash
+task test
+task check
+task lint
+```
 
 ## Documentation
 
-See the documentation at https://eoap.github.io/cwl2ogc/
+Project docs: https://eoap.github.io/cwl2ogc/
+
+CLI docs: [docs/cli.md](docs/cli.md)
+
+## Contributing
+
+Issues and pull requests are welcome:
+https://github.com/eoap/cwl2ogc/issues
 
 ## License
 
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+Apache-2.0. See [LICENSE](LICENSE).
