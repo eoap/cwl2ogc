@@ -11,6 +11,7 @@ from cwltool.main import main as cwltool
 st.header("CWL to OGC API Processes inputs/outputs")
 st.set_page_config(layout="wide")
 
+
 def validate_cwl(cwl_content):
     """Checks whether the CWL file meets basic conformance criteria.
 
@@ -22,7 +23,7 @@ def validate_cwl(cwl_content):
     """
     temp_dir = tempfile.mkdtemp()
     temp_cwl_path = os.path.join(temp_dir, "temp_cwl")
- 
+
     with open(temp_cwl_path, "w") as outfile:
         yaml.dump(cwl_content, outfile, default_flow_style=False)
 
@@ -58,7 +59,12 @@ btn_settings_editor_btns = [
     },
 ]
 
-with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources/custom_buttons_bar_alt.json")) as json_button_file_alt:
+with open(
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "resources/custom_buttons_bar_alt.json",
+    )
+) as json_button_file_alt:
     custom_buttons_alt = json.load(json_button_file_alt)
 
 height = [22, 25]
@@ -161,6 +167,6 @@ if response_dict["type"] == "submit":
         with col4:
             st.subheader("Outputs JSON schema")
             st.json(outputs_schema)
-            
+
     except Exception as e:
         st.error(f"Error parsing CWL: {e}")
