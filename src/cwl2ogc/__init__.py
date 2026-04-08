@@ -205,6 +205,9 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
                     {
                         "$ref": "https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json"
                     },
+                    {
+                        "$ref": "https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/schemas/featureCollectionGeoJSON.yaml"
+                    },
                 ]
             },
         )
