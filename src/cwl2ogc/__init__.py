@@ -170,7 +170,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
             if isinstance(type_, list):
                 for typ in type_:
                     _map_type(typ, map_function)
-            elif get_origin(type_) is Union:
+            elif get_args(type_):
                 for typ in get_args(type_):
                     _map_type(typ, map_function)
             else:
