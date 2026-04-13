@@ -13,7 +13,10 @@
 # limitations under the License.
 
 version: '3'
-  
+
+includes:
+  quality: https://raw.githubusercontent.com/Terradue/taskfile-utils/refs/heads/main/quality.yaml
+
 vars:
   IMAGE_NAME: ghcr.io/eoap/cwl2ogc/playground:latest
 
@@ -48,17 +51,7 @@ tasks:
       cd playground
       streamlit run playground.py
 
-  test:
-    desc: Run tests
+  default:
     cmds:
-    - hatch run test:test-show-setup
-
-  check:
-    desc: Run code quality checks
-    cmds:
-    - hatch run dev:check
-
-  lint:
-    desc: Run linters
-    cmds:
-    - hatch run dev:lint
+    - task: quality:test
+    - task: quality:check

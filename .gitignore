@@ -2,5 +2,6 @@
 .project
 __pycache__
 /.pytest_cache/
+.task
 .venv
 docs/api
