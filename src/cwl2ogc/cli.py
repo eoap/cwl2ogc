@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from . import BaseCWLtypes2OGCConverter
-from cwl_utils.parser import load_document_by_yaml, Process
+from cwl_utils.parser import load_document_by_yaml, load_document_by_uri, Process
 from datetime import datetime
 from loguru import logger
 from pathlib import Path
@@ -45,17 +45,33 @@ import time
 def main(source: Path, workflow_id: str, output: Path):
     start_time = time.time()
 
+    data: MutableMapping[str, Any] = {}
+
     logger.debug(f"Loading {workflow_id} from CWL document on {source}...")
 
-    metadata_manager: MetadataManager = MetadataManager(source)
+    try:
+        metadata_manager = MetadataManager(source)
+        logger.debug("Serializing Schema.org metadata...")
 
-    workflow: Process = load_document_by_yaml(
-        yaml=metadata_manager.raw_document, uri=os.path.dirname(source), id_=workflow_id
-    )
+        metadata: SoftwareApplication = metadata_manager.metadata
 
-    logger.debug(f"CWL document from {source} successfully load!")
+        if metadata:
+            for attribute in ["name", "description", "software_version", "license"]:
+                if hasattr(metadata, attribute):
+                    attribute_value = getattr(metadata, attribute, None)
+                    if attribute_value:
+                        data[attribute] = (
+                            attribute_value.model_dump()
+                            if isinstance(attribute_value, BaseModel)
+                            else attribute_value
+                        )
 
-    data: MutableMapping[str, Any] = {}
+        workflow: Process = load_document_by_yaml(
+            yaml=metadata_manager.raw_document, uri=source.absolute().as_uri(), id_=workflow_id
+        )
+    except:
+        logger.debug(f"Schema.org metadata not fully available in {source}")
+        workflow: Process = load_document_by_uri(f"{source.absolute().as_uri()}#{workflow_id}")
 
     logger.debug("Serializing CWL Workflow metadata...")
 
@@ -65,22 +81,7 @@ def main(source: Path, workflow_id: str, output: Path):
             if attribute_value:
                 data[attribute] = attribute_value.split("#")[-1]
 
-    logger.debug("Serializing Schema.org metadata...")
-
-    metadata: SoftwareApplication = metadata_manager.metadata
-
-    if metadata:
-        for attribute in ["name", "description", "software_version", "license"]:
-            if hasattr(metadata, attribute):
-                attribute_value = getattr(metadata, attribute, None)
-                if attribute_value:
-                    data[attribute] = (
-                        attribute_value.model_dump()
-                        if isinstance(attribute_value, BaseModel)
-                        else attribute_value
-                    )
-
-    logger.debug("Serializing inputs and outputs JSON Schema...")
+    logger.debug("Serializing inputs and outputs OGC API Process Schema...")
 
     cwl_converter = BaseCWLtypes2OGCConverter(workflow)
 
