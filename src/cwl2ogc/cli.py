@@ -24,7 +24,6 @@ from transpiler_mate.metadata.software_application_models import SoftwareApplica
 
 import click
 import json
-import os
 import time
 
 
@@ -67,11 +66,17 @@ def main(source: Path, workflow_id: str, output: Path):
                         )
 
         workflow: Process = load_document_by_yaml(
-            yaml=metadata_manager.raw_document, uri=source.absolute().as_uri(), id_=workflow_id
+            yaml=metadata_manager.raw_document,
+            uri=source.absolute().as_uri(),
+            id_=workflow_id,
         )
-    except:
-        logger.debug(f"Schema.org metadata not fully available in {source}")
-        workflow: Process = load_document_by_uri(f"{source.absolute().as_uri()}#{workflow_id}")
+    except Exception as e:
+        logger.debug(
+            f"Schema.org metadata not fully available in {source} due to : {e}"
+        )
+        workflow: Process = load_document_by_uri(
+            f"{source.absolute().as_uri()}#{workflow_id}"
+        )
 
     logger.debug("Serializing CWL Workflow metadata...")
 
