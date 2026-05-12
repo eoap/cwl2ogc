@@ -30,6 +30,7 @@ dependencies = [
   "click==8.3.2",
   "cwl-utils==0.41",
   "loguru==0.7.3",
+  "transpiler-mate==0.43.0"
 ]
 
 [project.scripts]

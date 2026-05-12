@@ -1,5 +1,6 @@
 .pydevproject
 .project
+.vscode
 __pycache__
 /.pytest_cache/
 .task

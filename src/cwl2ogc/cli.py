@@ -13,13 +13,18 @@
 # limitations under the License.
 
 from . import BaseCWLtypes2OGCConverter
-from cwl_utils.parser import load_document_by_uri, Process
+from cwl_utils.parser import load_document_by_yaml, Process
 from datetime import datetime
 from loguru import logger
 from pathlib import Path
+from pydantic import BaseModel
+from typing import Any, MutableMapping
+from transpiler_mate.metadata import MetadataManager
+from transpiler_mate.metadata.software_application_models import SoftwareApplication
 
 import click
 import json
+import os
 import time
 
 
@@ -42,30 +47,51 @@ def main(source: Path, workflow_id: str, output: Path):
 
     logger.debug(f"Loading {workflow_id} from CWL document on {source}...")
 
-    workflow: Process = load_document_by_uri(f"{source}#{workflow_id}")
+    metadata_manager: MetadataManager = MetadataManager(source)
+
+    workflow: Process = load_document_by_yaml(
+        yaml=metadata_manager.raw_document, uri=os.path.dirname(source), id_=workflow_id
+    )
 
     logger.debug(f"CWL document from {source} successfully load!")
 
+    data: MutableMapping[str, Any] = {}
+
+    logger.debug("Serializing CWL Workflow metadata...")
+
+    for attribute in ["id", "label", "doc"]:
+        if hasattr(workflow, attribute):
+            attribute_value = getattr(workflow, attribute, None)
+            if attribute_value:
+                data[attribute] = attribute_value.split("#")[-1]
+
+    logger.debug("Serializing Schema.org metadata...")
+
+    metadata: SoftwareApplication = metadata_manager.metadata
+
+    if metadata:
+        for attribute in ["name", "description", "software_version", "license"]:
+            if hasattr(metadata, attribute):
+                attribute_value = getattr(metadata, attribute, None)
+                if attribute_value:
+                    data[attribute] = (
+                        attribute_value.model_dump()
+                        if isinstance(attribute_value, BaseModel)
+                        else attribute_value
+                    )
+
+    logger.debug("Serializing inputs and outputs JSON Schema...")
+
     cwl_converter = BaseCWLtypes2OGCConverter(workflow)
 
-    data = {
-        "id": workflow.id.split("#")[-1],
-        "version": workflow.cwlVersion,
-        "inputs": cwl_converter.get_inputs(),
-        "outputs": cwl_converter.get_outputs(),
-    }
+    data["inputs"] = cwl_converter.get_inputs()
+    data["outputs"] = cwl_converter.get_outputs()
 
-    if workflow.label:
-        data["title"] = workflow.label
-
-    if workflow.doc:
-        data["description"] = workflow.doc
-
-    logger.info(
+    logger.success(
         "------------------------------------------------------------------------"
     )
-    logger.info("BUILD SUCCESS")
-    logger.info(
+    logger.success("BUILD SUCCESS")
+    logger.success(
         "------------------------------------------------------------------------"
     )
 
@@ -79,7 +105,7 @@ def main(source: Path, workflow_id: str, output: Path):
             indent=2,
         )
 
-    logger.info(f"New OCG API - Process successfully saved to {output}!")
+    logger.success(f"New OCG API - Process successfully saved to {output}!")
 
     end_time = time.time()
 
