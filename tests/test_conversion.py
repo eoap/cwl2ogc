@@ -18,11 +18,9 @@ from pathlib import Path
 
 import pytest
 import yaml
-from click.testing import CliRunner
 from cwl_utils.parser import load_document_by_yaml
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
-from cwl2ogc.cli import main
 
 
 ARTIFACTS_DIR = Path("tests/artifacts")
@@ -123,22 +121,3 @@ def test_dump_methods_emit_valid_json():
     for stream in streams:
         data = json.loads(stream.getvalue())
         assert isinstance(data, dict)
-
-
-def test_cli_writes_process_json(tmp_path: Path):
-    output = tmp_path / "process.json"
-    source = CWL_TYPES_DIR / "inp.cwl"
-
-    runner = CliRunner()
-    result = runner.invoke(
-        main,
-        [str(source), "--workflow-id", "inp", "--output", str(output)],
-    )
-
-    assert result.exit_code == 0
-    assert output.exists()
-
-    process = load_json(output)
-    assert process["id"] == "inp"
-    assert "inputs" in process
-    assert "outputs" in process

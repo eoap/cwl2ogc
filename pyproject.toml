@@ -27,14 +27,9 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "click==8.3.2",
   "cwl-utils==0.41",
   "loguru==0.7.3",
-  "transpiler-mate==0.43.0"
 ]
-
-[project.scripts]
-cwl2ogc = "cwl2ogc.cli:main"
 
 [project.urls]
 Documentation = "https://github.com/eoap/cwl2ogc#readme"
