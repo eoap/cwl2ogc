@@ -18,7 +18,6 @@ from pathlib import Path
 
 import pytest
 import yaml
-from click.testing import CliRunner
 from cwl_utils.parser import load_document_by_yaml
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
