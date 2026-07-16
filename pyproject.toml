@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/eoap/cwl2ogc#readme"
+Documentation = "https://eoap.github.io/cwl2ogc/"
 Issues = "https://github.com/eoap/cwl2ogc/issues"
 Source = "https://github.com/eoap/cwl2ogc"
 
