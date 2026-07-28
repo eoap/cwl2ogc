@@ -22,7 +22,6 @@ from cwl_utils.parser import load_document_by_yaml
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
 
-
 ARTIFACTS_DIR = Path("tests/artifacts")
 CWL_TYPES_DIR = ARTIFACTS_DIR / "cwl-types"
 CWL_TYPES_FIXTURES = [
