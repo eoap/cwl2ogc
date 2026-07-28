@@ -16,8 +16,8 @@ import io
 import json
 from pathlib import Path
 
-import yaml
 from cwl_utils.parser import load_document_by_yaml
+from ruamel.yaml import YAML
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
 
@@ -34,7 +34,7 @@ CWL_TYPES_FIXTURES = [
 
 def load_cwl_document(path: Path):
     with path.open() as stream:
-        cwl_content = yaml.load(stream, Loader=yaml.SafeLoader)
+        cwl_content = YAML().load(stream)
     return load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
 
 
