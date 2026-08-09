@@ -31,6 +31,18 @@ dependencies = [
   "loguru==0.7.3",
 ]
 
+[project.optional-dependencies]
+transpiler-mate-api = [
+  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
+]
+
+# TODO remove me as soon as transpiler-mate-api is on PyPI
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.entry-points."transpiler_mate.plugins"]
+cwl2ogc = "cwl2ogc.plugin:cwl2ogc"
+
 [project.urls]
 Documentation = "https://eoap.github.io/cwl2ogc/"
 Issues = "https://github.com/eoap/cwl2ogc/issues"
@@ -65,7 +77,6 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-
 [tool.hatch.envs.test]
 skip-install = false
 dependencies = [
@@ -89,14 +100,13 @@ addopts = [
 [[tool.hatch.envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
-
-
 [tool.hatch.envs.default]
 skip-install = false
 
 [tool.hatch.envs.dev]
 skip-install = false
 dependencies = [
+  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
   "mypy>=2.3.0",
   "ruff>=0.16.0",
   "bandit>=1.9.4",
