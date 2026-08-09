@@ -48,7 +48,7 @@ class Cwl2OgcOptions(BaseModel):
     description="Converts CWL input/output definitions into OGC API - Processes input/output schemas.",
     options_model=Cwl2OgcOptions,
 )
-def cwl2click(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
+def cwl2ogc(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
     """Serialize the resolved CWL document to ``options.output``."""
     data = context.metadata.model_dump()
 
