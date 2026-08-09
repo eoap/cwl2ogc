@@ -81,9 +81,8 @@ def cwl2ogc(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
     else:
         _wf_ogc_data(context.document)
 
-    options.output.mkdir(parents=True, exist_ok=True)
-
     try:
+        options.output.parent.mkdir(parents=True, exist_ok=True)
         with options.output.open("w") as output_stream:
             json.dump(data, output_stream, indent=2)
 
