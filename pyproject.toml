@@ -31,8 +31,9 @@ dependencies = [
   "loguru==0.7.3",
 ]
 
-[project.optional-dependencies]
-transpiler-mate-api = [
+[tool.hatch.envs.transpiler-mate]
+skip-install = false
+dependencies = [
   "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
 ]
 

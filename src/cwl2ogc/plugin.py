@@ -75,11 +75,8 @@ def cwl2ogc(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
 
         data["processes"][process.id] = process_data
 
-    if isinstance(context.document, tuple):
-        for workflow in context.document:
-            _wf_ogc_data(workflow)
-    else:
-        _wf_ogc_data(context.document)
+    for workflow in context.processes:
+        _wf_ogc_data(workflow)
 
     try:
         options.output.parent.mkdir(parents=True, exist_ok=True)
